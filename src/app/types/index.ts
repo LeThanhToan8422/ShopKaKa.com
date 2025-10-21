@@ -57,3 +57,11 @@ export interface Order {
 export interface UpdateProfileData {
   name: string;
 }
+
+export interface ProfileStatistics {
+  totalOrders: number;
+  completedOrders: number;
+  totalSpent: number;
+  pendingOrders: number;
+  cancelledOrders: number;
+}

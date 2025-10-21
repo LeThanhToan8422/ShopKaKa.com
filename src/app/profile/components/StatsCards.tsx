@@ -1,9 +1,9 @@
 'use client';
 
-import { UserProfile } from '../hooks/useProfile';
+import { ProfileStatistics } from '@/app/types';
 
 interface StatsCardsProps {
-  statistics: UserProfile['statistics'];
+  statistics: ProfileStatistics;
   formatCurrency: (amount: number) => string;
 }
 
