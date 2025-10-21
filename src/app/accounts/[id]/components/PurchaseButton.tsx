@@ -17,10 +17,7 @@ export default function PurchaseButton({ accountId, price, onClick }: Props) {
     handlePurchase: handlePurchaseLogic,
     qrUrl,
     setQrUrl,
-    orderNumber,
-    status,
-    setStatus,
-    isAuthenticated
+    orderNumber
   } = usePurchase(accountId, price);
   
   const handlePurchase = () => {

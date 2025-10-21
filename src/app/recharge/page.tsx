@@ -258,7 +258,7 @@ export default function RechargePage() {
                 </div>
                 <div className="flex items-start">
                   <div className="bg-blue-100 text-blue-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">2</div>
-                  <Text>Nhấn "Tạo mã QR nạp tiền" để tạo mã thanh toán</Text>
+                  <Text>Nhấn &quot;Tạo mã QR nạp tiền&quot; để tạo mã thanh toán</Text>
                 </div>
                 <div className="flex items-start">
                   <div className="bg-blue-100 text-blue-800 rounded-full w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">3</div>

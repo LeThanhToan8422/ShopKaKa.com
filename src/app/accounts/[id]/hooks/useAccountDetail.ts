@@ -43,7 +43,7 @@ export default function useAccountDetail() {
 
   const images: string[] = acc?.images || [];
 
-  let characterSkins: CharacterSkin[] = acc?.characterSkins || [];
+  const characterSkins: CharacterSkin[] = acc?.characterSkins || [];
 
   const rankDisplay = getRankLabel(acc?.rank || undefined);
 

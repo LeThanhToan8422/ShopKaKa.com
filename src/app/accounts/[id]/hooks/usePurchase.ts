@@ -51,7 +51,9 @@ export default function usePurchase(accountId?: string, price?: number) {
     }
   };
 
-  const handleSubmit = async (_values: FormValues) => {};
+  const handleSubmit = async (_values: FormValues) => {
+    // Implementation can be added later
+  };
 
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
@@ -88,10 +90,6 @@ export default function usePurchase(accountId?: string, price?: number) {
     orderNumber,
     setOrderNumber,
     status,
-    setStatus,
-    price,
-    isAuthenticated,
-    userName,
-    userEmail
+    setStatus
   };
 }
