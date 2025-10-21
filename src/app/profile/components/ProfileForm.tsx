@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { UserProfile, UpdateProfileData } from '../hooks/useProfile';
+import { UserProfile, UpdateProfileData } from '@/app/types';
 
 interface ProfileFormProps {
   profile: UserProfile;
