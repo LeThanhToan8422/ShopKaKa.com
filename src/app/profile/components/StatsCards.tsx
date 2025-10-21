@@ -49,10 +49,18 @@ export default function StatsCards({ statistics, formatCurrency }: StatsCardsPro
       textColor: 'text-red-600',
       bgColor: 'bg-red-50',
     },
+    {
+      title: 'Số dư tài khoản',
+      value: formatCurrency(statistics.balance),
+      icon: '💳',
+      color: 'bg-purple-500',
+      textColor: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+    },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
       {stats.map((stat, index) => (
         <div
           key={index}

@@ -38,7 +38,7 @@ export interface UserProfile {
   name: string | null;
   role: string;
   orders: Order[];
-  balance?: number; // Optional balance field
+  balance: number;
 }
 
 export interface Order {
@@ -64,4 +64,5 @@ export interface ProfileStatistics {
   totalSpent: number;
   pendingOrders: number;
   cancelledOrders: number;
+  balance: number;
 }

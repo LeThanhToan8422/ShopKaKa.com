@@ -104,7 +104,7 @@ export default function ProfileForm({ profile, onUpdate, updating }: ProfileForm
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Vai trò
@@ -120,6 +120,15 @@ export default function ProfileForm({ profile, onUpdate, updating }: ProfileForm
             </label>
             <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-600">
               {(profile as any).username || 'Chưa có tên đăng nhập'}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Số dư tài khoản
+            </label>
+            <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-600">
+              {profile.balance !== undefined ? `${profile.balance.toLocaleString('vi-VN')} VNĐ` : 'Chưa có thông tin'}
             </div>
           </div>
         </div>

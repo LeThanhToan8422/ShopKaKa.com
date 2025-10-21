@@ -161,13 +161,14 @@ export default function ProfilePage() {
     );
   }
 
-  // For the new API, we don't have statistics, so we'll calculate them from orders
+  // For the new API, we use the actual balance from the profile
   const statistics = {
     totalOrders: profile.orders.length,
     completedOrders: profile.orders.filter(order => order.success).length,
     totalSpent: profile.orders.reduce((sum, order) => sum + (order.order?.amount || 0), 0),
     pendingOrders: 0, // Not available in new API
     cancelledOrders: 0, // Not available in new API
+    balance: profile.balance || 0, // Use the actual balance from the profile
   };
 
   return (
