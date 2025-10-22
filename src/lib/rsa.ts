@@ -14,7 +14,7 @@ const PRIVATE_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY || "";
  * @returns Formatted private key with proper headers/footers
  */
 function formatPrivateKey(key: string): string {
-  let cleanKey = key.replace(/-----BEGIN PRIVATE KEY-----/g, '')
+  const cleanKey = key.replace(/-----BEGIN PRIVATE KEY-----/g, '')
                     .replace(/-----END PRIVATE KEY-----/g, '')
                     .replace(/\s+/g, '')
                     .trim();
