@@ -337,7 +337,7 @@ Request body:
 {
   "gameUsername": "string",
   "gamePassword": "string",
-  "characterSkin": [
+  "characterSkins": [
     {
       "character": "string",
       "skin": "string",

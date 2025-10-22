@@ -3,6 +3,8 @@
  * Contains all TypeScript interfaces and types used across the admin accounts module
  */
 
+import { RankValue } from "@/lib/ranks";
+
 /**
  * Individual skin structure
  * Represents a single skin of a character
@@ -47,7 +49,7 @@ export type SelectedSkin = {
  * Represents the data structure used in the admin account creation/update form
  */
 export type ModalValues = {
-  rank?: string; // Optional game rank
+  rank?: RankValue; // Updated to use RankValue enum
   price: number; // Account price in VND
   heroesCount: number; // Number of heroes owned
   skinsCount: number; // Number of skins owned
@@ -68,7 +70,7 @@ export type ModalValues = {
   additionalInfo?: string; // Additional account information
 
   // Character skins - array of selected skins
-  characterSkins?: SelectedSkin[];
+  characterSkin?: SelectedSkin[];
 };
 
 /**
@@ -76,7 +78,7 @@ export type ModalValues = {
  * Represents the data structure sent to the API
  */
 export type SubmitPayload = {
-  rank?: string;
+  rank?: RankValue;
   price: number;
   heroesCount: number;
   skinsCount: number;
@@ -91,7 +93,7 @@ export type SubmitPayload = {
   gamePassword?: string; // Game account password
   loginMethod?: string; // Login method
   additionalInfo?: string; // Additional account information
-  characterSkins: string | null; // JSON string or null
+  characterSkin: SelectedSkin[]; // Array of character skins according to API spec
 };
 
 /**
@@ -119,7 +121,7 @@ export type UploadResult = {
  */
 export type AdminAccount = {
   id: string; // Unique account identifier
-  rank?: string; // Optional game rank
+  rank?: RankValue; // Updated to use RankValue enum
   price: number; // Account price in VND
   heroesCount: number; // Number of heroes owned
   skinsCount: number; // Number of skins owned
@@ -134,7 +136,7 @@ export type AdminAccount = {
   matches?: number; // Total number of matches played
   winRate?: number; // Win rate percentage
   reputation?: number; // Account reputation score
-  characterSkins?: string; // JSON string containing character skins data
+  characterSkin?: SelectedSkin[]; // Array of character skins according to API spec
   
   // Account credentials
   gameUsername?: string; // Game account username

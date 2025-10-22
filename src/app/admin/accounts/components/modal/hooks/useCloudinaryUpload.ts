@@ -2,9 +2,10 @@ import { App } from "antd";
 import { useCallback } from "react";
 import { UploadResult } from "../../../types";
 import { MESSAGES } from "../../../constants";
+import { getCloudinaryUploadUrl } from "@/lib/cloudinaryConfig";
 
 /**
- * Custom hook for handling Cloudinary image uploads
+ * Custom hook for handling direct Cloudinary image uploads
  * Manages file upload process with loading states and error handling
  * @returns Object containing upload function
  */
@@ -13,8 +14,7 @@ export default function useCloudinaryUpload() {
   const { message } = App.useApp();
 
   /**
-   * Upload multiple files to Cloudinary
-   * Creates FormData, sends POST request, and handles response
+   * Upload multiple files directly to Cloudinary
    * @param fileList - Array of files to upload
    * @returns Promise resolving to array of upload results
    */
@@ -30,33 +30,51 @@ export default function useCloudinaryUpload() {
           0
         );
 
-        // Create FormData for file upload
-        const formData = new FormData();
-        fileList.forEach((file) => formData.append("files", file));
+        // Get Cloudinary config from environment variables
+        const uploadUrl = getCloudinaryUploadUrl();
+        const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
-        // Send POST request to Cloudinary upload API
-        const response = await fetch("/api/upload/cloudinary", {
-          method: "POST",
-          body: formData,
-        });
-
-        // Check if upload was successful
-        if (!response.ok) {
-          throw new Error("Upload failed");
+        // Validate Cloudinary configuration
+        if (!uploadPreset) {
+          throw new Error("Cloudinary upload preset is not configured");
         }
 
-        // Parse response and get upload results
-        const result = await response.json();
+        // Upload each file to Cloudinary
+        const uploadPromises = fileList.map(async (file) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("upload_preset", uploadPreset);
+          formData.append("folder", "lq-shop");
+
+          const response = await fetch(uploadUrl, {
+            method: "POST",
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error(`Upload failed for ${file.name}`);
+          }
+
+          const data = await response.json();
+          return {
+            url: data.secure_url,
+            name: data.original_filename,
+          };
+        });
+
+        // Wait for all uploads to complete
+        const results = await Promise.all(uploadPromises);
 
         // Hide loading message and show success
         loadingMessage();
         message.success(`${MESSAGES.UPLOAD_SUCCESS} ${fileList.length} ảnh`);
 
-        // Return upload results with proper typing
-        return result.uploads as UploadResult[];
-      } catch (error) {
+        // Return upload results
+        return results;
+      } catch (error: any) {
         // Show error message and re-throw error
         message.error(MESSAGES.UPLOAD_ERROR);
+        console.error("Upload error:", error);
         throw error;
       }
     },

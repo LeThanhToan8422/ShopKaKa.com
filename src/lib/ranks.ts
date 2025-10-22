@@ -1,40 +1,48 @@
 // Shared rank constants and utilities for the whole project
+// Updated to match backend enum values
 
 export type RankValue =
-  | "Bronze"
-  | "Silver"
-  | "Gold"
-  | "Platinum"
-  | "Diamond"
-  | "Conqueror"
-  | "Grandmaster"
-  | "Great Grandmaster"
-  | "Commander"
-  | "Warlord Supreme"
-  | "Legendary";
+  | "DONG"
+  | "BAC"
+  | "VANG"
+  | "BACH_KIM"
+  | "KIM_CUONG"
+  | "TINH_ANH"
+  | "CAO_THU"
+  | "CHIEN_TUONG"
+  | "CHIEN_THAN"
+  | "THACH_DAU";
 
 export const RANK_LABELS: Record<RankValue, string> = {
-  Bronze: "Đồng",
-  Silver: "Bạc",
-  Gold: "Vàng",
-  Platinum: "Bạch Kim",
-  Diamond: "Kim Cương",
-  Conqueror: "Tinh Anh",
-  Grandmaster: "Cao Thủ",
-  "Great Grandmaster": "Đại Cao Thủ",
-  Commander: "Chiến Tướng",
-  "Warlord Supreme": "Chiến Thần",
-  Legendary: "Thách Đấu",
+  DONG: "Đồng",
+  BAC: "Bạc",
+  VANG: "Vàng",
+  BACH_KIM: "Bạch Kim",
+  KIM_CUONG: "Kim Cương",
+  TINH_ANH: "Tinh Anh",
+  CAO_THU: "Cao Thủ",
+  CHIEN_TUONG: "Chiến Tướng",
+  CHIEN_THAN: "Chiến Thần",
+  THACH_DAU: "Thách Đấu",
 };
 
 export const RANK_VALUES: RankValue[] = Object.keys(RANK_LABELS) as RankValue[];
 
 export const RANK_OPTIONS = RANK_VALUES.map((value) => ({
-  value : RANK_LABELS[value],
+  value: value,
   label: RANK_LABELS[value],
 }));
 
 export function getRankLabel(value?: string | null): string {
   if (!value) return "Chưa xác định";
-  return (RANK_LABELS as Record<string, string>)[value] || value;
+  // First try to find by enum value
+  if (value in RANK_LABELS) {
+    return RANK_LABELS[value as RankValue];
+  }
+  // If not found, try to find by label (backward compatibility)
+  const entry = Object.entries(RANK_LABELS).find(([_, label]) => label === value);
+  if (entry) {
+    return entry[1];
+  }
+  return value;
 }

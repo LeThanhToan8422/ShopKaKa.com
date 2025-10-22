@@ -385,8 +385,8 @@ export default function AdminAccountModal({
                     Character Skins
                   </>
                 }
-                name="characterSkins">
-                <Form.List name="characterSkins">
+                name="characterSkin">
+                <Form.List name="characterSkin">
                   {(fields, { add, remove }) => (
                     <div className="space-y-4">
                       {fields.map(({ key, name, ...restField }) => (
@@ -434,19 +434,19 @@ export default function AdminAccountModal({
                                 onChange={() => {
                                   if (!isViewMode) {
                                     formModal.setFieldValue(
-                                      ["characterSkins", name, "skin"],
+                                      ["characterSkin", name, "skin"],
                                       undefined
                                     );
                                     formModal.setFieldValue(
-                                      ["characterSkins", name, "rarity"],
+                                      ["characterSkin", name, "rarity"],
                                       undefined
                                     );
                                     formModal.setFieldValue(
-                                      ["characterSkins", name, "avatar"],
+                                      ["characterSkin", name, "avatar"],
                                       undefined
                                     );
                                     formModal.setFieldValue(
-                                      ["characterSkins", name, "background"],
+                                      ["characterSkin", name, "background"],
                                       undefined
                                     );
                                   }
@@ -484,7 +484,7 @@ export default function AdminAccountModal({
                                   if (!isViewMode) {
                                     const characterName =
                                       formModal.getFieldValue([
-                                        "characterSkins",
+                                        "characterSkin",
                                         name,
                                         "character",
                                       ]);
@@ -497,16 +497,16 @@ export default function AdminAccountModal({
                                         console.log(skinDetails);
 
                                         formModal.setFieldValue(
-                                          ["characterSkins", name, "rarity"],
+                                          ["characterSkin", name, "rarity"],
                                           skinDetails.rarity
                                         );
                                         formModal.setFieldValue(
-                                          ["characterSkins", name, "avatar"],
+                                          ["characterSkin", name, "avatar"],
                                           skinDetails.avatar
                                         );
                                         formModal.setFieldValue(
                                           [
-                                            "characterSkins",
+                                            "characterSkin",
                                             name,
                                             "background",
                                           ],
@@ -518,7 +518,7 @@ export default function AdminAccountModal({
                                 }}
                                 options={(() => {
                                   const characterName = formModal.getFieldValue(
-                                    ["characterSkins", name, "character"]
+                                    ["characterSkin", name, "character"]
                                   );
                                   const skins = characterName
                                     ? getSkinsForCharacter(characterName)

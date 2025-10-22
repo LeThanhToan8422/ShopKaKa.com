@@ -19,6 +19,7 @@ import useAdminAccounts from "./hooks/useAdminAccounts";
 import AdminAccountModal from "./components/modal/page";
 import { AdminAccount } from "./types";
 import { formatCurrency, formatDate } from "@/app/utils";
+import { RANK_OPTIONS, getRankLabel } from "@/lib/ranks";
 
 /**
  * Admin Accounts Management Page
@@ -71,7 +72,7 @@ export default function AdminAccountsPage() {
       width: 120,
       render: (rank: string) => (
         <span className="font-semibold text-blue-600">
-          {rank || "N/A"} {/* Show N/A if no rank */}
+          {getRankLabel(rank) || "N/A"} {/* Show N/A if no rank */}
         </span>
       ),
     },
@@ -188,18 +189,7 @@ export default function AdminAccountsPage() {
                 <Select
                   allowClear
                   placeholder="Chọn rank"
-                  options={[
-                    "Đồng",
-                    "Bạc",
-                    "Vàng",
-                    "Bạch Kim",
-                    "Kim Cương",
-                    "Tinh Anh",
-                    "Cao Thủ",
-                    "Chiến Tướng",
-                    "Chiến Thần",
-                    "Thách Đấu",
-                  ].map((r) => ({ value: r, label: r }))}
+                  options={RANK_OPTIONS}
                 />
               </Form.Item>
             </Col>

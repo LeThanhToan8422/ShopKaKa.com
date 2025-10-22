@@ -4,15 +4,15 @@ import { useState, useEffect, useCallback } from "react";
 import { Form, App } from "antd";
 import { AdminAccount, ModalValues } from "../../../types";
 import useImageManagement from "./useImageManagement";
-import useCloudinaryUpload from "./useCloudinaryUpload";
 import useFormValidation from "./useFormValidation";
 import { createPayload } from "../../../helpers";
 import { MESSAGES } from "../../../constants";
 import { saleAccountAPI } from "@/lib/api";
+import { decryptRSAText } from "@/lib/rsa"; // Import RSA decryption utility
 
 /**
  * Main hook for managing admin account modal functionality
- * Orchestrates image management, form validation, API submission, and Cloudinary upload
+ * Orchestrates image management, form validation, API submission
  * @param editing - Account being edited (null for create mode)
  * @param onSuccess - Callback function called after successful operation
  * @returns Object containing form instance, handlers, and state
@@ -32,7 +32,6 @@ export default function useAdminAccountModal(
 
   // Custom hooks for specific functionality
   const imageManagement = useImageManagement();
-  const cloudinaryUpload = useCloudinaryUpload();
   const formValidation = useFormValidation();
 
   /**
@@ -41,25 +40,11 @@ export default function useAdminAccountModal(
    */
   useEffect(() => {
     if (editing && formModal) {
-      // Parse character skins first
-      let characterSkins = [];
-      if (editing.characterSkins) {
-        try {
-          const parsed =
-            typeof editing.characterSkins === "string"
-              ? JSON.parse(editing.characterSkins)
-              : editing.characterSkins;
-
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            characterSkins = parsed;
-          }
-        } catch (error) {
-          console.error("Error parsing characterSkins:", error);
-          characterSkins = [];
-        }
-      }
-
-      // Load all fields at once to avoid multiple setFieldValue calls
+      // Decrypt the game password if it exists
+      const decryptedPassword = editing.gamePassword 
+        ? decryptRSAText(editing.gamePassword) 
+        : editing.gamePassword;
+      
       formModal.setFieldsValue({
         rank: editing.rank,
         price: editing.price,
@@ -72,11 +57,10 @@ export default function useAdminAccountModal(
         winRate: editing.winRate,
         reputation: editing.reputation,
         gameUsername: editing.gameUsername,
-        gamePassword: editing.gamePassword,
+        gamePassword: decryptedPassword,
         loginMethod: editing.loginMethod,
         additionalInfo: editing.additionalInfo,
-        // Character skins
-        characterSkins: characterSkins,
+        characterSkin: (editing.characterSkin && Array.isArray(editing.characterSkin)) ? editing.characterSkin : [],
       });
 
       // Load images - for the new API, we'll use the images field directly
@@ -123,30 +107,18 @@ export default function useAdminAccountModal(
         setLoading(true);
         const loadingMessage = message.loading("Đang xử lý...", 0);
 
-        // Upload new images to Cloudinary first
-        let uploadedUrls: string[] = [];
-        if (imageManagement.newFiles.length > 0) {
-          const uploaded = await cloudinaryUpload.uploadFiles(
-            imageManagement.newFiles
-          );
-          uploadedUrls = uploaded.map((u) => u.url);
-        }
-
-        // Get existing image URLs (non-blob URLs)
-        const existingUrls = imageManagement.images
-          .filter((img) => !img.isNew && !img.url.startsWith("blob:"))
-          .map((img) => img.url);
-
-        // Combine existing and new URLs
-        const allImageUrls = [...existingUrls, ...uploadedUrls];
-
-        // Create payload with proper image URLs
-        // We need to create a payload that matches the SubmitPayload type
-        const payload = {
+        // Create payload with image files instead of URLs
+        // Backend will handle uploading to Cloudinary
+        const payload: any = {
           ...values,
-          images: allImageUrls, // Use images array directly
-          // Convert characterSkins to JSON string if it exists
-          characterSkins: values.characterSkins ? JSON.stringify(values.characterSkins) : null
+          characterSkin: values.characterSkin ? values.characterSkin : [],
+          price: Number(values.price),
+          heroesCount: Number(values.heroesCount),
+          skinsCount: Number(values.skinsCount),
+          level: Number(values.level),
+          matches: Number(values.matches),
+          winRate: Number(values.winRate),
+          reputation: Number(values.reputation)
         };
 
         // Validate payload before submission
@@ -160,8 +132,8 @@ export default function useAdminAccountModal(
           // Update existing account
           await saleAccountAPI.update(editing.id, payload);
         } else {
-          // Create new account
-          await saleAccountAPI.create(payload);
+          // Create new account with image files
+          await saleAccountAPI.create(payload, imageManagement.newFiles);
         }
 
         // Show success message and reset modal
@@ -186,7 +158,6 @@ export default function useAdminAccountModal(
     [
       editing,
       imageManagement,
-      cloudinaryUpload,
       formValidation,
       message,
       onSuccess,

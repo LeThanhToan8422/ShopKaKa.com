@@ -6,12 +6,6 @@ import { ModalValues, SubmitPayload } from "../types";
  * @returns Formatted payload for API
  */
 export const createPayload = (values: any): SubmitPayload => {
-  // Convert characterSkins to JSON string
-  let characterSkinsJson: string | null = null;
-  if (values.characterSkins && values.characterSkins.length > 0) {
-    characterSkinsJson = JSON.stringify(values.characterSkins);
-  }
-
   return {
     rank: values.rank || undefined,
     price: Number(values.price),
@@ -24,11 +18,10 @@ export const createPayload = (values: any): SubmitPayload => {
     matches: values.matches ? Number(values.matches) : 0,
     winRate: values.winRate ? Number(values.winRate) : 0,
     reputation: values.reputation ? Number(values.reputation) : 0,
-    // Account credentials
     gameUsername: values.gameUsername || undefined,
     gamePassword: values.gamePassword || undefined,
     loginMethod: values.loginMethod || undefined,
     additionalInfo: values.additionalInfo || undefined,
-    characterSkins: characterSkinsJson,
+    characterSkin: values.characterSkin ? values.characterSkin : [],
   };
 };

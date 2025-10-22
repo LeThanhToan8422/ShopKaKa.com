@@ -125,7 +125,31 @@ export const saleAccountAPI = {
     const queryString = queryParams.toString();
     return apiClient.get(`/saleAccount${queryString ? `?${queryString}` : ''}`);
   },
-  create: (data: any) => apiClient.post('/saleAccount', data),
+  create: (data: any, files?: File[]) => {
+    if (files && files.length > 0) {
+      // If files are provided, send as multipart form data
+      const formData = new FormData();
+      
+      // Append all the data fields individually
+      Object.keys(data).forEach(key => {
+        formData.append(key, data[key]);
+      });
+      
+      // Append each file
+      files.forEach((file, index) => {
+        formData.append('images', file, file.name);
+      });
+      
+      return apiClient.post('/saleAccount', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    } else {
+      // If no files, send as JSON (existing behavior)
+      return apiClient.post('/saleAccount', data);
+    }
+  },
   upload: (blindBoxId: string, file: string) => {
     const formData = new FormData();
     formData.append('file', file);

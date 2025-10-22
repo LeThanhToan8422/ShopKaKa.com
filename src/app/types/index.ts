@@ -1,5 +1,7 @@
 // Shared types used across the application
 
+import { RankValue } from "@/lib/ranks";
+
 export interface CharacterSkin {
   character: string;
   skin: string;
@@ -10,7 +12,7 @@ export interface CharacterSkin {
 
 export interface Account {
   id: string;
-  rank: string | null;
+  rank: RankValue | null;
   price: number;
   heroesCount: number;
   skinsCount: number;
