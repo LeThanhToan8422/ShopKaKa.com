@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Form, App } from "antd";
-import { AdminAccount, ModalValues } from "../../../types";
+import { AdminAccount, ModalValues, SelectedSkin } from "../../../types";
 import useImageManagement from "./useImageManagement";
 import useFormValidation from "./useFormValidation";
 import { createPayload } from "../../../helpers";
@@ -45,6 +45,16 @@ export default function useAdminAccountModal(
         ? decryptRSAText(editing.gamePassword) 
         : editing.gamePassword;
       
+      // Map character skins to the expected format for the form
+      const mappedCharacterSkins = editing.characterSkins?.map((skin: SelectedSkin) => ({
+        id: skin.id,
+        character: skin.character,
+        skin: skin.skin,
+        rarity: skin.rarity,
+        avatar: skin.avatar,
+        background: skin.background
+      })) || [];
+      
       formModal.setFieldsValue({
         rank: editing.rank,
         price: editing.price,
@@ -60,7 +70,7 @@ export default function useAdminAccountModal(
         gamePassword: decryptedPassword,
         loginMethod: editing.loginMethod,
         additionalInfo: editing.additionalInfo,
-        characterSkin: (editing.characterSkin && Array.isArray(editing.characterSkin)) ? editing.characterSkin : [],
+        characterSkins: mappedCharacterSkins,
       });
 
       // Load images - for the new API, we'll use the images field directly
@@ -109,9 +119,8 @@ export default function useAdminAccountModal(
 
         // Create payload with image files instead of URLs
         // Backend will handle uploading to Cloudinary
-        const payload: any = {
+        const payload = createPayload({
           ...values,
-          characterSkin: values.characterSkin ? values.characterSkin : [],
           price: Number(values.price),
           heroesCount: Number(values.heroesCount),
           skinsCount: Number(values.skinsCount),
@@ -119,7 +128,7 @@ export default function useAdminAccountModal(
           matches: Number(values.matches),
           winRate: Number(values.winRate),
           reputation: Number(values.reputation)
-        };
+        });
 
         // Validate payload before submission
         if (!formValidation.validateForm(values).isValid) {
@@ -129,8 +138,8 @@ export default function useAdminAccountModal(
 
         // Submit to new API
         if (editing) {
-          // Update existing account
-          await saleAccountAPI.update(editing.id, payload);
+          // Update existing account with image files
+          await saleAccountAPI.update(editing.id, payload, imageManagement.newFiles);
         } else {
           // Create new account with image files
           await saleAccountAPI.create(payload, imageManagement.newFiles);

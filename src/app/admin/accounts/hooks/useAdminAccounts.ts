@@ -24,6 +24,7 @@ export default function useAdminAccounts() {
   // Modal state
   const [modalOpen, setModalOpen] = useState(false); // Whether modal is open
   const [editing, setEditing] = useState<AdminAccount | null>(null); // Account being edited
+  const [detailLoading, setDetailLoading] = useState(false); // Loading state for fetching account details
 
   // Thêm state cho modal mode
   const [modalMode, setModalMode] = useState<"create" | "edit" | "view">(
@@ -41,11 +42,42 @@ export default function useAdminAccounts() {
     setLoading(true);
 
     try {
-      // Fetch data from new API with pagination parameters
-      const response = await saleAccountAPI.getAll({
+      // Get form values for filtering
+      const formValues = form.getFieldsValue();
+      
+      // Build API parameters
+      const apiParams: any = {
         page: page - 1, // Convert to 0-based indexing
         size: pageSize
-      });
+      };
+      
+      // Add filter parameters if they exist
+      if (formValues.rank) {
+        apiParams.rank = formValues.rank;
+      }
+      
+      if (formValues.minPrice !== undefined && formValues.minPrice !== null) {
+        apiParams.minPrice = formValues.minPrice;
+      }
+      
+      if (formValues.maxPrice !== undefined && formValues.maxPrice !== null) {
+        apiParams.maxPrice = formValues.maxPrice;
+      }
+      
+      if (formValues.minHeroes !== undefined && formValues.minHeroes !== null) {
+        apiParams.minHeroes = formValues.minHeroes;
+      }
+      
+      if (formValues.minSkins !== undefined && formValues.minSkins !== null) {
+        apiParams.minSkins = formValues.minSkins;
+      }
+      
+      if (formValues.q) {
+        apiParams.q = formValues.q;
+      }
+
+      // Fetch data from new API with all parameters
+      const response = await saleAccountAPI.getAll(apiParams);
       
       // Extract content array from the response data
       const accounts = response.data?.content || [];
@@ -75,9 +107,67 @@ export default function useAdminAccounts() {
    * Handle search form submission
    * Resets to first page and fetches data with new search criteria
    */
-  const onSearch = () => {
+  const onSearch = (values?: any) => {
     setPage(1); // Reset to first page
     fetchData(); // Fetch data with new search criteria
+  };
+
+  /**
+   * Fetch detailed account data by ID and map it to AdminAccount format
+   * @param id - Account ID to fetch
+   * @returns Detailed account data in AdminAccount format
+   */
+  const fetchAccountDetail = async (id: string) => {
+    try {
+      setDetailLoading(true);
+      const response = await saleAccountAPI.getById(id);
+      
+      // Map API response to AdminAccount format
+      const accountData = response.data?.item || response.data;
+      if (!accountData) {
+        throw new Error("Invalid response format");
+      }
+      
+      // Map character skins to the expected format
+      const mappedCharacterSkins = accountData.characterSkins?.map((skin: any) => ({
+        id: skin.id,
+        character: skin.character,
+        skin: skin.skin,
+        rarity: skin.rarity,
+        avatar: skin.avatar,
+        background: skin.background
+      })) || [];
+      
+      const mappedAccount: AdminAccount = {
+        id: accountData.id,
+        rank: accountData.rank,
+        price: accountData.price,
+        heroesCount: accountData.heroesCount,
+        skinsCount: accountData.skinsCount,
+        status: accountData.status,
+        description: accountData.description || undefined,
+        images: accountData.images || [],
+        createdAt: accountData.createdAt || accountData.createAt,
+        updatedAt: accountData.updatedAt || accountData.updateAt || "",
+        level: accountData.level,
+        matches: accountData.matches,
+        winRate: accountData.winRate,
+        reputation: accountData.reputation,
+        characterSkins: mappedCharacterSkins,
+        gameUsername: accountData.gameUsername || undefined,
+        gamePassword: accountData.gamePassword || undefined,
+        loginMethod: accountData.loginMethod || undefined,
+        additionalInfo: accountData.additionalInfo || undefined
+      };
+      
+      return mappedAccount;
+    } catch (error) {
+      console.error("Fetch account detail error:", error);
+      message.error("Lỗi khi tải chi tiết tài khoản");
+      return null;
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   /**
@@ -92,24 +182,30 @@ export default function useAdminAccounts() {
 
   /**
    * Open modal for editing existing account
-   * Sets editing state and opens modal
+   * Fetches detailed account data and opens modal
    * @param record - Account to edit
    */
-  const openEdit = (record: AdminAccount) => {
-    setEditing(record); // Set account being edited
+  const openEdit = async (record: AdminAccount) => {
     setModalMode("edit"); // Set modal mode to edit
-    setModalOpen(true); // Open modal
+    const detailedAccount = await fetchAccountDetail(record.id);
+    if (detailedAccount) {
+      setEditing(detailedAccount); // Set detailed account data
+      setModalOpen(true); // Open modal
+    }
   };
 
   /**
    * Open modal for viewing existing account
-   * Sets editing state and opens modal
+   * Fetches detailed account data and opens modal
    * @param record - Account to view
    */
-  const openView = (record: AdminAccount) => {
-    setEditing(record); // Set account being edited
+  const openView = async (record: AdminAccount) => {
     setModalMode("view"); // Set modal mode to view
-    setModalOpen(true); // Open modal
+    const detailedAccount = await fetchAccountDetail(record.id);
+    if (detailedAccount) {
+      setEditing(detailedAccount); // Set detailed account data
+      setModalOpen(true); // Open modal
+    }
   };
 
   /**
@@ -175,7 +271,8 @@ export default function useAdminAccounts() {
     total, // Total number of accounts
     page, // Current page number
     pageSize, // Items per page
-    loading, // Loading state
+    loading, // Loading state for data fetching
+    detailLoading, // Loading state for fetching account details
 
     // Pagination handlers
     setPage, // Set current page

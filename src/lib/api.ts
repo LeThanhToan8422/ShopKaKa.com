@@ -102,7 +102,35 @@ export const userAPI = {
 // Sale Account APIs
 export const saleAccountAPI = {
   getById: (id: string) => apiClient.get(`/saleAccount/${id}`),
-  update: (id: string, data: any) => apiClient.put(`/saleAccount/${id}`, data),
+  update: (id: string, data: any, files?: File[]) => {
+    // Always use multipart form data for consistency
+    const formData = new FormData();
+    
+    // Append all the data fields individually
+    Object.keys(data).forEach(key => {
+      // Handle arrays specially - append each item individually
+      if (Array.isArray(data[key])) {
+        data[key].forEach((item: any, index: number) => {
+          formData.append(`${key}[${index}]`, item);
+        });
+      } else {
+        formData.append(key, data[key]);
+      }
+    });
+    
+    // Append each file if provided
+    if (files && files.length > 0) {
+      files.forEach((file, index) => {
+        formData.append('images', file, file.name);
+      });
+    }
+    
+    return apiClient.put(`/saleAccount/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
   delete: (id: string) => apiClient.delete(`/saleAccount/${id}`),
   getAll: (params?: { 
     rank?: string; 
@@ -126,29 +154,33 @@ export const saleAccountAPI = {
     return apiClient.get(`/saleAccount${queryString ? `?${queryString}` : ''}`);
   },
   create: (data: any, files?: File[]) => {
-    if (files && files.length > 0) {
-      // If files are provided, send as multipart form data
-      const formData = new FormData();
-      
-      // Append all the data fields individually
-      Object.keys(data).forEach(key => {
+    // Always use multipart form data for consistency
+    const formData = new FormData();
+    
+    // Append all the data fields individually
+    Object.keys(data).forEach(key => {
+      // Handle arrays specially - append each item individually
+      if (Array.isArray(data[key])) {
+        data[key].forEach((item: any, index: number) => {
+          formData.append(`${key}[${index}]`, item);
+        });
+      } else {
         formData.append(key, data[key]);
-      });
-      
-      // Append each file
+      }
+    });
+    
+    // Append each file if provided
+    if (files && files.length > 0) {
       files.forEach((file, index) => {
         formData.append('images', file, file.name);
       });
-      
-      return apiClient.post('/saleAccount', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-    } else {
-      // If no files, send as JSON (existing behavior)
-      return apiClient.post('/saleAccount', data);
     }
+    
+    return apiClient.post('/saleAccount', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
   upload: (blindBoxId: string, file: string) => {
     const formData = new FormData();
@@ -184,6 +216,25 @@ export const paymentAPI = {
         'Authorization': authorization,
       },
     }),
+};
+
+// Character Skin APIs
+export const characterSkinAPI = {
+  getAll: (params?: { 
+    page?: number; 
+    size?: number;
+  }) => {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = queryParams.toString();
+    return apiClient.get(`/characterSkin${queryString ? `?${queryString}` : ''}`);
+  },
 };
 
 export default apiClient;

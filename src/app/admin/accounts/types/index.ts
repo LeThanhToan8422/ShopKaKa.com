@@ -10,6 +10,7 @@ import { RankValue } from "@/lib/ranks";
  * Represents a single skin of a character
  */
 export type Skin = {
+  id?: string; // Add ID field
   name: string; // Skin name (Thiên Tướng - Độ Ách, Lôi vệ...)
   rarity: string; // Rarity level (SS+ HỮU HẠN, A HỮU HẠN, S+, etc.)
   avatar: string; // Skin avatar image URL
@@ -37,6 +38,7 @@ export type CharacterSkinsData = CharacterWithSkins[];
  * Field names must match the form field names
  */
 export type SelectedSkin = {
+  id?: string; // Add ID field
   character: string; // Selected character name (matches form field name)
   skin: string; // Selected skin name (matches form field name)
   rarity: string; // Auto-filled rarity
@@ -69,8 +71,8 @@ export type ModalValues = {
   loginMethod?: string; // Login method (Facebook, Google, etc.)
   additionalInfo?: string; // Additional account information
 
-  // Character skins - array of selected skins
-  characterSkin?: SelectedSkin[];
+  // Character skins - array of selected skins (can be undefined)
+  characterSkins?: SelectedSkin[];
 };
 
 /**
@@ -93,7 +95,7 @@ export type SubmitPayload = {
   gamePassword?: string; // Game account password
   loginMethod?: string; // Login method
   additionalInfo?: string; // Additional account information
-  characterSkin: SelectedSkin[]; // Array of character skins according to API spec
+  characterSkins: string[]; // Array of character skin IDs according to API spec
 };
 
 /**
@@ -136,7 +138,7 @@ export type AdminAccount = {
   matches?: number; // Total number of matches played
   winRate?: number; // Win rate percentage
   reputation?: number; // Account reputation score
-  characterSkin?: SelectedSkin[]; // Array of character skins according to API spec
+  characterSkins?: SelectedSkin[]; // Array of character skins according to API spec
   
   // Account credentials
   gameUsername?: string; // Game account username

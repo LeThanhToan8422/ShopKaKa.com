@@ -13,6 +13,7 @@ import {
   Upload,
   Image as AntImage,
   Badge,
+  Spin,
 } from "antd";
 import {
   UploadOutlined,
@@ -24,15 +25,11 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import useAdminAccountModal from "./hooks/useAdminAccountModal";
+import useCharacterSkins from "./hooks/useCharacterSkins";
 import { AdminAccount } from "../../types";
-import {
-  getCharacterNames,
-  getSkinsForCharacter,
-  getSkinDetails,
-  getRarityColor,
-} from "../../data/characterSkins";
 import Image from "next/image";
 import { RANK_OPTIONS } from "@/lib/ranks";
+import { useState } from "react";
 
 /**
  * Props interface for AdminAccountModal component
@@ -43,7 +40,27 @@ interface AdminAccountModalProps {
   onClose: () => void; // Callback when modal is closed
   onSuccess: () => void; // Callback when operation is successful
   mode?: "create" | "edit" | "view"; // Thêm mode prop
+  loading?: boolean; // Loading state for fetching account details
 }
+
+// Helper function to get rarity color for badge display
+const getRarityColor = (rarity: string): string => {
+  // Handle Vietnamese rarity names
+  if (rarity.includes("SS+ HỮU HẠN")) return "purple";
+  if (rarity.includes("SS+")) return "purple";
+  if (rarity.includes("SS")) return "purple";
+  if (rarity.includes("S+ HỮU HẠN")) return "blue";
+  if (rarity.includes("S+")) return "blue";
+  if (rarity.includes("S HỮU HẠN")) return "cyan";
+  if (rarity.includes("A HỮU HẠN")) return "green";
+  if (rarity.includes("A")) return "green";
+  if (rarity.includes("THƯỞNG HẠNG")) return "gold";
+  if (rarity.includes("呪術廻戦")) return "red"; // Jujutsu Kaisen
+  if (rarity.includes("SNK")) return "orange";
+  if (rarity.includes("SSM")) return "magenta";
+
+  return "default";
+};
 
 /**
  * Modal component for creating and editing admin accounts
@@ -57,6 +74,7 @@ export default function AdminAccountModal({
   onClose,
   onSuccess,
   mode = "create", // Default mode
+  loading = false, // Default loading state
 }: AdminAccountModalProps) {
   // Get modal functionality from custom hook
   const {
@@ -71,6 +89,9 @@ export default function AdminAccountModal({
     resetModal,
   } = useAdminAccountModal(editing, onSuccess);
 
+  // Get character skins data from API
+  const { characterSkins, loading: skinsLoading } = useCharacterSkins();
+
   /**
    * Handle modal close with cleanup
    * Closes modal and resets form state
@@ -82,6 +103,67 @@ export default function AdminAccountModal({
 
   // Determine if fields should be disabled
   const isViewMode = mode === "view";
+
+  // Get character names from API data
+  const getCharacterNames = () => {
+    return characterSkins.map((character) => character.name);
+  };
+
+  // Get skins for a specific character
+  const getSkinsForCharacter = (characterName: string) => {
+    const character = characterSkins.find(
+      (char) => char.name === characterName
+    );
+    return character?.skins || [];
+  };
+
+  // Get specific skin details
+  const getSkinDetails = (characterName: string, skinName: string) => {
+    const character = characterSkins.find(
+      (char) => char.name === characterName
+    );
+    return character?.skins.find((skin) => skin.name === skinName);
+  };
+
+  // Add a fallback image component
+  const SkinImage = ({ src, alt }: { src: string; alt: string }) => {
+    const [hasError, setHasError] = useState(false);
+    
+    if (hasError) {
+      return (
+        <div className="bg-gray-200 border-2 border-dashed rounded-xl w-6 h-6 flex items-center justify-center">
+          <span className="text-xs text-gray-500">?</span>
+        </div>
+      );
+    }
+    
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        width={24}
+        height={24}
+        className="rounded object-cover"
+        onError={() => setHasError(true)}
+      />
+    );
+  };
+
+  // Show loading spinner when fetching account details
+  if (loading && mode !== "create") {
+    return (
+      <Modal
+        title={mode === "view" ? "Xem chi tiết tài khoản" : "Sửa tài khoản"}
+        open={open}
+        onCancel={handleClose}
+        footer={null}
+        width={1000}>
+        <div className="flex justify-center items-center h-64">
+          <Spin size="large" />
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal
@@ -385,201 +467,201 @@ export default function AdminAccountModal({
                     Character Skins
                   </>
                 }
-                name="characterSkin">
-                <Form.List name="characterSkin">
-                  {(fields, { add, remove }) => (
-                    <div className="space-y-4">
-                      {fields.map(({ key, name, ...restField }) => (
-                        <div
-                          key={key}
-                          className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-medium text-gray-700">
-                              Skin #{name + 1}
-                            </span>
-                            {/* Hide delete button in view mode */}
-                            {!isViewMode && (
-                              <Button
-                                type="text"
-                                danger
-                                size="small"
-                                icon={<DeleteOutlined />}
-                                onClick={() => remove(name)}>
-                                Xóa
-                              </Button>
-                            )}
-                          </div>
+                name="characterSkins">
+                {skinsLoading ? (
+                  <div className="flex justify-center items-center h-32">
+                    <Spin size="large" />
+                  </div>
+                ) : (
+                  <Form.List name="characterSkins">
+                    {(fields, { add, remove }) => (
+                      <div className="space-y-4">
+                        {fields.map(({ key, name, ...restField }) => (
+                          <div
+                            key={key}
+                            className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-medium text-gray-700">
+                                Skin #{name + 1}
+                              </span>
+                              {/* Hide delete button in view mode */}
+                              {!isViewMode && (
+                                <Button
+                                  type="text"
+                                  danger
+                                  size="small"
+                                  icon={<DeleteOutlined />}
+                                  onClick={() => remove(name)}>
+                                  Xóa
+                                </Button>
+                              )}
+                            </div>
 
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Character Selection */}
-                            <Form.Item
-                              {...restField}
-                              name={[name, "character"]}
-                              label="Character"
-                              rules={[
-                                {
-                                  required: true,
-                                  message: "Vui lòng chọn character!",
-                                },
-                              ]}>
-                              <Select
-                                placeholder="Chọn character"
-                                showSearch
-                                disabled={isViewMode} // Disable in view mode
-                                filterOption={(input, option) =>
-                                  String(option?.label ?? "")
-                                    .toLowerCase()
-                                    .includes(input.toLowerCase())
-                                }
-                                onChange={() => {
-                                  if (!isViewMode) {
-                                    formModal.setFieldValue(
-                                      ["characterSkin", name, "skin"],
-                                      undefined
-                                    );
-                                    formModal.setFieldValue(
-                                      ["characterSkin", name, "rarity"],
-                                      undefined
-                                    );
-                                    formModal.setFieldValue(
-                                      ["characterSkin", name, "avatar"],
-                                      undefined
-                                    );
-                                    formModal.setFieldValue(
-                                      ["characterSkin", name, "background"],
-                                      undefined
-                                    );
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {/* Character Selection */}
+                              <Form.Item
+                                {...restField}
+                                name={[name, "character"]}
+                                label="Character"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Vui lòng chọn character!",
+                                  },
+                                ]}>
+                                <Select
+                                  placeholder="Chọn character"
+                                  showSearch
+                                  disabled={isViewMode} // Disable in view mode
+                                  filterOption={(input, option) =>
+                                    String(option?.label ?? "")
+                                      .toLowerCase()
+                                      .includes(input.toLowerCase())
                                   }
-                                }}
-                                options={getCharacterNames().map(
-                                  (characterName) => ({
-                                    value: characterName,
-                                    label: characterName,
-                                  })
-                                )}
-                              />
-                            </Form.Item>
-
-                            {/* Skin Selection */}
-                            <Form.Item
-                              {...restField}
-                              name={[name, "skin"]}
-                              label="Skin"
-                              rules={[
-                                {
-                                  required: true,
-                                  message: "Vui lòng chọn skin!",
-                                },
-                              ]}>
-                              <Select
-                                placeholder="Chọn skin"
-                                showSearch
-                                disabled={isViewMode} // Disable in view mode
-                                filterOption={(input, option) =>
-                                  String(option?.label ?? "")
-                                    .toLowerCase()
-                                    .includes(input.toLowerCase())
-                                }
-                                onChange={(value) => {
-                                  if (!isViewMode) {
-                                    const characterName =
-                                      formModal.getFieldValue([
-                                        "characterSkin",
-                                        name,
-                                        "character",
-                                      ]);
-                                    if (characterName && value) {
-                                      const skinDetails = getSkinDetails(
-                                        characterName,
-                                        value
+                                  onChange={() => {
+                                    if (!isViewMode) {
+                                      formModal.setFieldValue(
+                                        ["characterSkins", name, "skin"],
+                                        undefined
                                       );
-                                      if (skinDetails) {
-                                        console.log(skinDetails);
+                                      formModal.setFieldValue(
+                                        ["characterSkins", name, "rarity"],
+                                        undefined
+                                      );
+                                      formModal.setFieldValue(
+                                        ["characterSkins", name, "avatar"],
+                                        undefined
+                                      );
+                                      formModal.setFieldValue(
+                                        ["characterSkins", name, "background"],
+                                        undefined
+                                      );
+                                    }
+                                  }}
+                                  options={getCharacterNames().map(
+                                    (characterName) => ({
+                                      value: characterName,
+                                      label: characterName,
+                                    })
+                                  )}
+                                />
+                              </Form.Item>
 
-                                        formModal.setFieldValue(
-                                          ["characterSkin", name, "rarity"],
-                                          skinDetails.rarity
+                              {/* Skin Selection */}
+                              <Form.Item
+                                {...restField}
+                                name={[name, "skin"]}
+                                label="Skin"
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Vui lòng chọn skin!",
+                                  },
+                                ]}>
+                                <Select
+                                  placeholder="Chọn skin"
+                                  showSearch
+                                  disabled={isViewMode} // Disable in view mode
+                                  filterOption={(input, option) =>
+                                    String(option?.label ?? "")
+                                      .toLowerCase()
+                                      .includes(input.toLowerCase())
+                                  }
+                                  onChange={(value) => {
+                                    if (!isViewMode) {
+                                      const characterName =
+                                        formModal.getFieldValue([
+                                          "characterSkins",
+                                          name,
+                                          "character",
+                                        ]);
+                                      if (characterName && value) {
+                                        const skinDetails = getSkinDetails(
+                                          characterName,
+                                          value
                                         );
-                                        formModal.setFieldValue(
-                                          ["characterSkin", name, "avatar"],
-                                          skinDetails.avatar
-                                        );
-                                        formModal.setFieldValue(
-                                          [
-                                            "characterSkin",
-                                            name,
-                                            "background",
-                                          ],
-                                          skinDetails.background
-                                        );
+                                        if (skinDetails) {
+                                          console.log(skinDetails);
+
+                                          formModal.setFieldValue(
+                                            ["characterSkins", name, "id"],
+                                            skinDetails.id 
+                                          );
+                                          formModal.setFieldValue(
+                                            ["characterSkins", name, "rarity"],
+                                            skinDetails.rarity
+                                          );
+                                          formModal.setFieldValue(
+                                            ["characterSkins", name, "avatar"],
+                                            skinDetails.avatar
+                                          );
+                                          formModal.setFieldValue(
+                                            [
+                                              "characterSkins",
+                                              name,
+                                              "background",
+                                            ],
+                                            skinDetails.background
+                                          );
+                                        }
                                       }
                                     }
-                                  }
-                                }}
-                                options={(() => {
-                                  const characterName = formModal.getFieldValue(
-                                    ["characterSkin", name, "character"]
-                                  );
-                                  const skins = characterName
-                                    ? getSkinsForCharacter(characterName)
-                                    : [];
-                                  return skins.map((skin) => ({
-                                    value: skin.name,
-                                    label: (
-                                      <div className="flex items-center space-x-2">
-                                        <Image
-                                          src={skin.avatar}
-                                          alt={skin.name}
-                                          width={24}
-                                          height={24}
-                                          className="rounded object-cover"
-                                          onError={(e) => {
-                                            e.currentTarget.style.display =
-                                              "none";
-                                          }}
-                                        />
-                                        <span>{skin.name}</span>
-                                        <Badge
-                                          color={getRarityColor(skin.rarity)}
-                                          text={skin.rarity}
-                                          className="text-xs"
-                                        />
-                                      </div>
-                                    ),
-                                  }));
-                                })()}
-                              />
-                            </Form.Item>
+                                  }}
+                                  options={(() => {
+                                    const characterName = formModal.getFieldValue(
+                                      ["characterSkins", name, "character"]
+                                    );
+                                    const skins = characterName
+                                      ? getSkinsForCharacter(characterName)
+                                      : [];
+                                    return skins.map((skin) => ({
+                                      value: skin.name,
+                                      label: (
+                                        <div className="flex items-center space-x-2">
+                                          <SkinImage src={skin.avatar} alt={skin.name} />
+                                          <span>{skin.name}</span>
+                                          <Badge
+                                            color={getRarityColor(skin.rarity)}
+                                            text={skin.rarity}
+                                            className="text-xs"
+                                          />
+                                        </div>
+                                      ),
+                                    }));
+                                  })()}
+                                />
+                              </Form.Item>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
 
-                      {/* Hide add button in view mode */}
-                      {!isViewMode && (
-                        <Button
-                          type="dashed"
-                          onClick={() => add()}
-                          block
-                          icon={<PlusOutlined />}
-                          className="mt-2">
-                          Thêm Character Skin
-                        </Button>
-                      )}
+                        {/* Hide add button in view mode */}
+                        {!isViewMode && (
+                          <Button
+                            type="dashed"
+                            onClick={() => add()}
+                            block
+                            icon={<PlusOutlined />}
+                            className="mt-2">
+                            Thêm Character Skin
+                          </Button>
+                        )}
 
-                      {/* Character Skins Summary */}
-                      {fields.length > 0 && (
-                        <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
-                          <div className="flex items-center space-x-2 text-blue-700">
-                            <CrownOutlined />
-                            <span className="font-medium">
-                              Tổng cộng: {fields.length} character skin(s)
-                            </span>
+                        {/* Character Skins Summary */}
+                        {fields.length > 0 && (
+                          <div className="mt-4 p-3 bg-blue-50 rounded border border-blue-200">
+                            <div className="flex items-center space-x-2 text-blue-700">
+                              <CrownOutlined />
+                              <span className="font-medium">
+                                Tổng cộng: {fields.length} character skin(s)
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Form.List>
+                        )}
+                      </div>
+                    )}
+                  </Form.List>
+                )}
               </Form.Item>
             </div>
           </Col>

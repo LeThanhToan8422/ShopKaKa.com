@@ -29,7 +29,7 @@ export const RANK_LABELS: Record<RankValue, string> = {
 export const RANK_VALUES: RankValue[] = Object.keys(RANK_LABELS) as RankValue[];
 
 export const RANK_OPTIONS = RANK_VALUES.map((value) => ({
-  value: value,
+  value: RANK_LABELS[value],
   label: RANK_LABELS[value],
 }));
 

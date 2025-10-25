@@ -22,6 +22,10 @@ export const createPayload = (values: any): SubmitPayload => {
     gamePassword: values.gamePassword || undefined,
     loginMethod: values.loginMethod || undefined,
     additionalInfo: values.additionalInfo || undefined,
-    characterSkin: values.characterSkin ? values.characterSkin : [],
+    characterSkins: values.characterSkins 
+      ? values.characterSkins
+          .filter((skin: any) => skin.id) // Only include skins that have an ID
+          .map((skin: any) => skin.id) // Send only the ID
+      : [],
   };
 };

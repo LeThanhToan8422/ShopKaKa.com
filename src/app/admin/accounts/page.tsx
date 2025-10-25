@@ -35,6 +35,7 @@ export default function AdminAccountsPage() {
     page,
     pageSize,
     loading,
+    detailLoading,
     setPage,
     setPageSize,
     onSearch,
@@ -145,8 +146,7 @@ export default function AdminAccountsPage() {
       width: 120,
       render: (date: string) => (
         <Typography.Text className="text-xs text-gray-500">
-          {date ? formatDate(date) : "N/A"}{" "}
-          {/* Format as Vietnamese date */}
+          {date ? formatDate(date) : "N/A"} {/* Format as Vietnamese date */}
         </Typography.Text>
       ),
     },
@@ -184,7 +184,7 @@ export default function AdminAccountsPage() {
             </Col>
 
             {/* Rank Filter */}
-            <Col xs={24} sm={12} md={6}>
+            <Col xs={24} sm={12} md={3}>
               <Form.Item name="rank" label="Rank" className="!mb-0">
                 <Select
                   allowClear
@@ -196,13 +196,34 @@ export default function AdminAccountsPage() {
 
             {/* Price Range Filter */}
             <Col xs={24} sm={12} md={6}>
-              <Form.Item name="minPrice" label="Giá từ" className="!mb-0">
-                <InputNumber className="w-full" min={0} />
+              <Form.Item label="Giá" className="!mb-0">
+                <Space.Compact className="!w-full">
+                  <Form.Item name="minPrice" noStyle>
+                    <InputNumber className="!w-full" min={0} placeholder="Từ" />
+                  </Form.Item>
+                  <Form.Item name="maxPrice" noStyle>
+                    <InputNumber className="!w-full" min={0} placeholder="Đến" />
+                  </Form.Item>
+                </Space.Compact>
+              </Form.Item>
+            </Col>
+            
+            {/* Heroes Count Filter */}
+            <Col xs={24} sm={12} md={2}>
+              <Form.Item name="minHeroes" label="Tướng ≥" className="!mb-0">
+                <InputNumber className="w-full" min={0} placeholder="0" />
+              </Form.Item>
+            </Col>
+            
+            {/* Skins Count Filter */}
+            <Col xs={24} sm={12} md={2}>
+              <Form.Item name="minSkins" label="Skin ≥" className="!mb-0">
+                <InputNumber className="w-full" min={0} placeholder="0" />
               </Form.Item>
             </Col>
 
             {/* Action Buttons */}
-            <Col xs={24} sm={12} md={6} className="flex items-end">
+            <Col xs={24} sm={12} md={5} className="flex items-end">
               <Space>
                 <Button type="primary" htmlType="submit" loading={loading}>
                   Lọc
@@ -250,6 +271,7 @@ export default function AdminAccountsPage() {
         onClose={closeModal}
         onSuccess={onModalSuccess}
         mode={modalMode} // Pass mode prop
+        loading={detailLoading} // Pass loading state for fetching account details
       />
     </div>
   );
