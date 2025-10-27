@@ -502,7 +502,7 @@ export default function BlindBoxPage() {
                 ease: "linear"
               }}
               className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400">
-              Tài khoản trong túi mù "{selectedBlindBox?.name}"
+              Tài khoản trong túi mù &quot;{selectedBlindBox?.name}&quot;
             </motion.span>
           </Title>
         </motion.div>
@@ -592,7 +592,7 @@ export default function BlindBoxPage() {
                   duration: 3,
                   repeat: Infinity
                 }}>
-                Tất cả tài khoản dưới đây đều thuộc túi mù "{selectedBlindBox?.name}". Hãy chọn một tài khoản để xem chi tiết và mua ngay!
+                Tất cả tài khoản dưới đây đều thuộc túi mù &quot;{selectedBlindBox?.name}&quot;. Hãy chọn một tài khoản để xem chi tiết và mua ngay!
               </motion.span>
             </Text>
           </motion.div>
