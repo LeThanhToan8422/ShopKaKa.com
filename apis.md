@@ -48,6 +48,7 @@ Responses:
   "id": "string",
   "name": "string",
   "role": "string",
+  "balance": 0.1,
   "orders": [
     {
       "userId": "string",
@@ -63,7 +64,6 @@ Responses:
     }
   ]
 }
-
 
 4.PUT : /user/profile
 
@@ -337,7 +337,7 @@ Request body:
 {
   "gameUsername": "string",
   "gamePassword": "string",
-  "characterSkins": [
+  "characterSkin": [
     {
       "character": "string",
       "skin": "string",
@@ -696,4 +696,297 @@ Responses:
   "amount": 0.1,
   "message": "string",
   "status": "string"
+}
+
+16.GET: /characterSkin
+Parameters:
+page: integer($int32) (query)
+size: integer($int32) (query)
+
+Responses:
+{
+  "totalElements": 0,
+  "totalPages": 0,
+  "pageable": {
+    "paged": true,
+    "pageNumber": 0,
+    "pageSize": 0,
+    "offset": 0,
+    "sort": {
+      "sorted": true,
+      "empty": true,
+      "unsorted": true
+    },
+    "unpaged": true
+  },
+  "size": 0,
+  "content": [
+    {
+      "character": "string",
+      "skin": "string",
+      "rarity": "string",
+      "avatar": "string",
+      "background": "string"
+    }
+  ],
+  "number": 0,
+  "sort": {
+    "sorted": true,
+    "empty": true,
+    "unsorted": true
+  },
+  "numberOfElements": 0,
+  "first": true,
+  "last": true,
+  "empty": true
+}
+
+
+17.GET: /blindBox
+Parameters:
+page: integer($int32) (query)
+size: integer($int32) (query)
+
+Responses:
+{
+  "totalElements": 0,
+  "totalPages": 0,
+  "pageable": {
+    "paged": true,
+    "pageNumber": 0,
+    "pageSize": 0,
+    "offset": 0,
+    "sort": {
+      "sorted": true,
+      "empty": true,
+      "unsorted": true
+    },
+    "unpaged": true
+  },
+  "size": 0,
+  "content": [
+    {
+      "id": "string",
+      "name": "string",
+      "saleAccounts": [
+        "string"
+      ]
+    }
+  ],
+  "number": 0,
+  "sort": {
+    "sorted": true,
+    "empty": true,
+    "unsorted": true
+  },
+  "first": true,
+  "last": true,
+  "numberOfElements": 0,
+  "empty": true
+}
+
+
+18.POST: /blindBox
+Request body:
+{
+  "createdAt": "2025-10-27T14:05:48.901Z",
+  "updatedAt": "2025-10-27T14:05:48.901Z",
+  "name": "string",
+  "price": 0.1,
+  "saleAccounts": [
+    "string"
+  ],
+  "active": true
+}
+
+Responses:
+{
+  "success": true,
+  "message": "string",
+  "item": {
+    "id": "string",
+    "name": "string",
+    "saleAccounts": [
+      "string"
+    ]
+  }
+}
+
+
+19.POST: /blindBox/upload
+Parameters:
+blindBoxId : string (query)
+
+Request body:
+{
+  "file": file
+}
+
+Responses:
+{
+  "success": true,
+  "message": "string",
+  "item": [
+    {
+      "id": "string",
+      "characterSkins": [
+        {
+          "character": "string",
+          "skin": "string",
+          "rarity": "string",
+          "avatar": "string",
+          "background": "string"
+        }
+      ],
+      "gameUsername": "string",
+      "gamePassword": "string",
+      "images": [
+        "string"
+      ],
+      "owner": "string",
+      "blindBoxId": "string",
+      "status": "string",
+      "rank": "string",
+      "price": 0,
+      "heroesCount": 0,
+      "skinsCount": 0,
+      "description": "string",
+      "level": 0,
+      "matches": 0,
+      "winRate": 0.1,
+      "reputation": 0,
+      "loginMethod": "string",
+      "additionalInfo": "string",
+      "createdAt": "2025-10-27T14:06:44.537Z",
+      "updatedAt": "2025-10-27T14:06:44.537Z"
+    }
+  ]
+}
+
+
+20.POST: /blindBox/tear
+Request body:
+{
+  "userId": "string",
+  "accountId": "string",
+  "blindBoxId": "string"
+}
+
+Responses:
+{
+  "success": true,
+  "message": "string",
+  "item": {
+    "id": "string",
+    "characterSkins": [
+      {
+        "character": "string",
+        "skin": "string",
+        "rarity": "string",
+        "avatar": "string",
+        "background": "string"
+      }
+    ],
+    "gameUsername": "string",
+    "gamePassword": "string",
+    "images": [
+      "string"
+    ],
+    "owner": "string",
+    "blindBoxId": "string",
+    "status": "string",
+    "rank": "string",
+    "price": 0,
+    "heroesCount": 0,
+    "skinsCount": 0,
+    "description": "string",
+    "level": 0,
+    "matches": 0,
+    "winRate": 0.1,
+    "reputation": 0,
+    "loginMethod": "string",
+    "additionalInfo": "string",
+    "createdAt": "2025-10-27T14:08:20.847Z",
+    "updatedAt": "2025-10-27T14:08:20.847Z"
+  }
+}
+
+
+21.POST: /blindBox/addAccount
+Request body:
+{
+  "blindBoxId": "string",
+  "accountId": [
+    "string"
+  ]
+}
+
+Responses:
+{
+  "success": true,
+  "message": "string",
+  "item": "string"
+}
+
+
+22.GET: /blindBox/id
+Parameters:
+id : string (path)
+
+Responses:
+{
+  "success": true,
+  "message": "string",
+  "item": {
+    "id": "string",
+    "name": "string",
+    "saleAccounts": [
+      "string"
+    ]
+  }
+}
+
+
+22.DELETE: /blindBox/id
+Parameters:
+id : string (path)
+
+Responses:
+{
+  "success": true,
+  "message": "string",
+  "item": {
+    "id": "string",
+    "name": "string",
+    "saleAccounts": [
+      "string"
+    ]
+  }
+}
+
+23.PUT: /blindBox
+Request body:
+{
+  "id": "string",
+  "createdAt": "2025-10-27T14:36:05.245Z",
+  "updatedAt": "2025-10-27T14:36:05.245Z",
+  "name": "string",
+  "price": 0.1,
+  "saleAccounts": [
+    "string"
+  ],
+  "active": true
+}
+
+Responses:
+{
+  "success": true,
+  "message": "string",
+  "item": {
+    "id": "string",
+    "name": "string",
+    "saleAccounts": [
+      "string"
+    ]
+  }
 }

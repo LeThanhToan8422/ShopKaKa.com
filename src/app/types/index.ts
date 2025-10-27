@@ -35,6 +35,14 @@ export interface Account {
   // Add other fields as needed
 }
 
+// New type for blind box
+export interface BlindBox {
+  id: string;
+  name: string;
+  price?: number; // Add price field
+  saleAccounts: string[]; // Array of account IDs
+}
+
 export interface UserProfile {
   id: string;
   name: string | null;

@@ -139,6 +139,7 @@ export const saleAccountAPI = {
     minHeroes?: number; 
     minSkins?: number;
     price?: number;
+    blindBoxId?: string; // Add blindBoxId filter parameter
     page?: number; 
     size?: number;
   }) => {
@@ -199,6 +200,47 @@ export const saleAccountAPI = {
     if (size !== undefined) queryParams.append('size', String(size));
     const queryString = queryParams.toString();
     return apiClient.get(`/saleAccount/user/${userId}${queryString ? `?${queryString}` : ''}`);
+  },
+  // New endpoint for fetching blind boxes
+  getBlindBoxes: (params?: { page?: number; size?: number }) => {
+    const queryParams = new URLSearchParams();
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
+      });
+    }
+    const queryString = queryParams.toString();
+    return apiClient.get(`/blindBox${queryString ? `?${queryString}` : ''}`);
+  },
+  // New endpoint for tearing a blind box
+  tearBlindBox: (data: { userId: string; accountId: string; blindBoxId: string }) => 
+    apiClient.post('/blindBox/tear', data),
+  // New endpoint for creating a blind box
+  createBlindBox: (data: { name: string; price?: number; saleAccounts?: string[] }) => 
+    apiClient.post('/blindBox', data),
+  // New endpoint for updating a blind box
+  updateBlindBox: (data: { id: string; name: string; price?: number; saleAccounts?: string[] }) => 
+    apiClient.put('/blindBox', data),
+  // New endpoint for deleting a blind box
+  deleteBlindBox: (id: string) => 
+    apiClient.delete(`/blindBox/${id}`),
+  // New endpoint for getting a specific blind box
+  getBlindBoxById: (id: string) => 
+    apiClient.get(`/blindBox/${id}`),
+  // New endpoint for adding accounts to a blind box
+  addAccountToBlindBox: (data: { blindBoxId: string; accountId: string[] }) => 
+    apiClient.post('/blindBox/addAccount', data),
+  // New endpoint for uploading file to blind box
+  uploadBlindBoxFile: (blindBoxId: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.post(`/blindBox/upload?blindBoxId=${blindBoxId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
 };
 

@@ -272,6 +272,9 @@ export default function AdminDashboardPage() {
               <Link href="/admin/payments">
                 <Button>Quản lý thanh toán</Button>
               </Link>
+              <Link href="/admin/blindbox">
+                <Button>Quản lý túi mù</Button>
+              </Link>
             </Space>
           </Card>
         </Col>

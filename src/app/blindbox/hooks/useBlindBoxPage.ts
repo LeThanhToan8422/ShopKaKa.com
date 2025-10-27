@@ -1,71 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import useBlindBoxAccounts from "./useBlindBoxAccounts";
 import { saleAccountAPI, userAPI } from '@/lib/api';
 
-// Mock data for price options
-const PRICE_OPTIONS = [
-  { value: 10000, label: "10.000đ" },
-  { value: 20000, label: "20.000đ" },
-  { value: 50000, label: "50.000đ" },
-  { value: 100000, label: "100.000đ" },
-  { value: 200000, label: "200.000đ" },
-  { value: 500000, label: "500.000đ" },
-];
-
 export default function useBlindBoxPage() {
-  const [selectedPrice, setSelectedPrice] = useState<number | null>(null);
-  const [customPrice, setCustomPrice] = useState<number | null>(null);
-  const [useCustomPrice, setUseCustomPrice] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<any>(null);
   const [isBoxOpened, setIsBoxOpened] = useState(false);
   const [openedAccount, setOpenedAccount] = useState<any>(null);
   const [showSkinReveal, setShowSkinReveal] = useState(false);
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const {
-    data: accounts,
-    total,
-    page,
-    pageSize,
-    loading,
-    error,
-    fetchAccountsByPrice,
-    setPage,
-    setPageSize,
-  } = useBlindBoxAccounts();
-
-  // Fetch accounts based on selected price
-  const fetchAccounts = async () => {
-    const price = useCustomPrice ? customPrice : selectedPrice;
-    if (!price) return;
-    await fetchAccountsByPrice(price, 1); // Reset to first page
-  };
-
-  // Handle price selection
-  const handlePriceSelect = (value: number) => {
-    setSelectedPrice(value);
-    setUseCustomPrice(false);
-  };
-
-  // Handle custom price input
-  const handleCustomPriceChange = (value: number | null) => {
-    setCustomPrice(value);
-    if (value !== null) {
-      setUseCustomPrice(true);
-    }
-  };
-
-  // Handle account selection - initiate purchase process
-  const handleAccountSelection = async (account: any) => {
-    const price = useCustomPrice ? customPrice : selectedPrice;
-    if (!price) return;
-
-    // Set selected account
-    setSelectedAccount(account);
-
+  // Handle account selection - initiate tear process
+  const handleAccountSelection = async (accountId: string, blindBoxId: string) => {
     // Add a dramatic "tearing" animation effect
-    const selectedElement = document.getElementById(`account-${account.id}`);
+    const selectedElement = document.getElementById(`account-${accountId}`);
     if (selectedElement) {
       // Add initial selection effect
       selectedElement.classList.add("scale-95", "opacity-75");
@@ -137,7 +87,7 @@ export default function useBlindBoxPage() {
     // Add a delay for visual effect
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Process purchase using the proper API endpoint
+    // Process tear using the new API endpoint
     try {
       // First, we need to get the user ID by fetching the user profile
       let userId: string | null = null;
@@ -155,70 +105,83 @@ export default function useBlindBoxPage() {
         return;
       }
 
-      // Call the proper API endpoint for blind bag purchase
-      const response = await saleAccountAPI.getBlindBag(userId, account.id);
+      // Call the new API endpoint for blind box tear
+      const response = await saleAccountAPI.tearBlindBox({
+        userId,
+        accountId: accountId,
+        blindBoxId
+      });
 
       if (response.data.success) {
         // Update the selected account with the revealed account data
         const revealedAccount = response.data.item;
         setSelectedAccount(revealedAccount);
         
-        // After successful blind bag selection, show the skin reveal modal
+        // After successful blind box tear, show the skin reveal modal
         setTimeout(() => {
           setShowSkinReveal(true);
         }, 100);
       } else {
-        alert(response.data.message || "Failed to process purchase");
+        alert(response.data.message || "Failed to process tear");
       }
     } catch (error: any) {
-      console.error("Error processing purchase:", error);
-      alert(error.response?.data?.message || "Failed to process purchase. Please try again.");
+      console.error("Error processing tear:", error);
+      alert(error.response?.data?.message || "Failed to process tear. Please try again.");
     }
+  };
+
+  // Set accounts when a blind box is selected
+  const setAccountsFromBlindBox = (saleAccountIds: string[]) => {
+    // Convert the array of IDs to account objects with just the ID for now
+    // In a real implementation, you might want to fetch the full account details
+    const accountObjects = saleAccountIds.map(id => ({ id }));
+    setAccounts(accountObjects);
   };
 
   // Handle purchase confirmation from skin reveal modal
   const handlePurchaseConfirm = async () => {
-    const price = useCustomPrice ? customPrice : selectedPrice;
-    if (!price || !selectedAccount) return;
-
     // Show the selected account details (in a real implementation, this would redirect to order page)
     setOpenedAccount(selectedAccount);
     setIsBoxOpened(true);
     setShowSkinReveal(false);
   };
 
+  // Function to refresh blind box data from API after purchase
+  const refreshBlindBoxData = async (blindBoxId: string) => {
+    try {
+      setLoading(true);
+      const response = await saleAccountAPI.getBlindBoxById(blindBoxId);
+      if (response.data && response.data.item) {
+        return response.data.item;
+      }
+    } catch (err: any) {
+      console.error("Error refreshing blind box data:", err);
+      setError("Không thể làm mới dữ liệu túi mù. Vui lòng thử lại sau.");
+    } finally {
+      setLoading(false);
+    }
+    return null;
+  };
+
   return {
     // State
-    selectedPrice,
-    customPrice,
-    useCustomPrice,
     selectedAccount,
     isBoxOpened,
     openedAccount,
     showSkinReveal,
     accounts,
-    total,
-    page,
-    pageSize,
     loading,
     error,
     
     // Functions
-    setSelectedPrice,
-    setCustomPrice,
-    setUseCustomPrice,
     setSelectedAccount,
     setIsBoxOpened,
     setOpenedAccount,
     setShowSkinReveal,
-    fetchAccountsByPrice,
-    setPage,
-    setPageSize,
-    fetchAccounts,
-    handlePriceSelect,
-    handleCustomPriceChange,
+    setAccountsFromBlindBox,
     handleAccountSelection,
     handlePurchaseConfirm,
-    PRICE_OPTIONS
+    refreshBlindBoxData,
+    setLoading, // Add setLoading function to the return object
   };
 }

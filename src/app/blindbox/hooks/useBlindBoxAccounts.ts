@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { saleAccountAPI } from "@/lib/api";
-import { Account, CharacterSkin } from "@/app/types";
+import { Account } from "@/app/types";
 
 export default function useBlindBoxAccounts() {
   const [data, setData] = useState<Account[]>([]);
@@ -12,18 +12,22 @@ export default function useBlindBoxAccounts() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAccountsByPrice = async (price: number, pageNum: number = 1) => {
+  const fetchAccountsByBlindBox = async (blindBoxId: string, pageNum: number = 1) => {
     setLoading(true);
     setError(null);
 
     try {
+      // Fetch accounts filtered by blindBoxId
       const response = await saleAccountAPI.getAll({
         page: pageNum - 1, // Convert to 0-based indexing
-        size: pageSize,
-        price: price
+        size: pageSize
       });
 
-      const accounts = response.data?.content || [];
+      // Filter accounts by blindBoxId
+      const accounts = (response.data?.content || []).filter(
+        (account: Account) => account.blindBoxId === blindBoxId
+      );
+      
       setData(accounts);
       setTotal(response.data?.totalElements || accounts.length);
       setPage(pageNum);
@@ -44,7 +48,7 @@ export default function useBlindBoxAccounts() {
     pageSize,
     loading,
     error,
-    fetchAccountsByPrice,
+    fetchAccountsByBlindBox,
     setPage,
     setPageSize,
   };
