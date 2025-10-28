@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Button,
@@ -10,19 +10,244 @@ import {
   Row,
   Col,
   Empty,
+  Modal,
 } from "antd";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import useBlindBoxes from "./hooks/useBlindBoxes";
 import useBlindBoxAccounts from "./hooks/useBlindBoxAccounts";
 import useBlindBoxPage from "./hooks/useBlindBoxPage";
 import BlindBoxOpening from "./components/BlindBoxOpening";
 import SkinRevealModal from "./components/SkinRevealModal";
+import { getWingStyleByRarity, getModalRarityClasses as getRarityClasses } from "@/app/utils";
+import { Image as AntImage } from "antd";
 
 const { Title, Text } = Typography;
+
+// Mystery Card Back Component
+function MysteryCardBack() {
+  return (
+    <div className="relative w-full h-full rounded-2xl overflow-hidden">
+      {/* Card back background with mystery pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900" />
+      
+      {/* Animated glow effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-transparent to-pink-400/20 animate-pulse" />
+      
+      {/* Card back pattern */}
+      <div className="absolute inset-0 opacity-30">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute text-4xl text-white/20"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`,
+            }}>
+            ?
+          </div>
+        ))}
+      </div>
+      
+      {/* Central mystery element */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <motion.div
+          className="relative w-32 h-32 flex items-center justify-center"
+          animate={{
+            rotate: [0, 10, -10, 0],
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}>
+          {/* Outer glow */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 opacity-70 blur-md animate-pulse"></div>
+          
+          {/* Main circle */}
+          <div className="relative w-24 h-24 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full shadow-2xl flex items-center justify-center overflow-hidden border-4 border-white/40">
+            {/* Shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+            
+            {/* Question mark */}
+            <span className="text-4xl text-white font-bold relative z-10 drop-shadow-lg">
+              ?
+            </span>
+          </div>
+        </motion.div>
+      </div>
+      
+      {/* Shine effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-full group-hover:-translate-x-full transition-transform duration-1000"></div>
+    </div>
+  );
+}
+
+// Skin Card Component
+function SkinCard({ 
+  skin, 
+  isActive,
+  isFlipped,
+}: { 
+  skin: any; 
+  isActive: boolean;
+  isFlipped: boolean;
+}) {
+  const rarityClasses = getRarityClasses(skin.rarity);
+  const wingStyle = getWingStyleByRarity(skin.rarity);
+
+  return (
+    <motion.div
+      className="relative w-full h-80 rounded-2xl overflow-hidden"
+      initial={false}
+      animate={{ 
+        rotateY: isFlipped ? 0 : 180,
+      }}
+      transition={{ 
+        duration: 0.8,
+        ease: "easeInOut"
+      }}
+      style={{ transformStyle: "preserve-3d" }}>
+      
+      {/* Card back (mystery side) */}
+      <div 
+        className="absolute inset-0 backface-hidden"
+        style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
+        <MysteryCardBack />
+      </div>
+      
+      {/* Card front (skin side) */}
+      <div 
+        className="absolute inset-0 backface-hidden"
+        style={{ backfaceVisibility: "hidden" }}>
+        <motion.div
+          className={`relative rounded-2xl overflow-hidden border-4 transition-all duration-500 ${
+            isActive 
+              ? "border-yellow-400 shadow-[0_0_30px_rgba(255,215,0,0.6)] scale-105" 
+              : "border-white/20 hover:border-white/40"
+          }`}
+          whileHover={{ 
+            y: -10, 
+            scale: 1.03,
+            boxShadow: "0 20px 40px rgba(0,0,0,0.3)"
+          }}
+          whileTap={{ scale: 0.98 }}
+          layout
+          transition={{ 
+            type: "spring", 
+            stiffness: 300, 
+            damping: 20 
+          }}>
+          {/* Animated background */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${skin.background ? '' : rarityClasses?.badge} opacity-80`} />
+          
+          {/* Skin image */}
+          <div className="relative z-10 p-6">
+            <div className="flex flex-col items-center">
+              {/* Character avatar */}
+              <motion.div 
+                className="relative mb-4"
+                animate={isActive ? { 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0]
+                } : {}}
+                transition={{ 
+                  duration: 2,
+                  repeat: isActive ? Infinity : 0,
+                  ease: "easeInOut"
+                }}>
+                {skin.avatar ? (
+                  <AntImage
+                    src={skin.avatar}
+                    alt={`${skin.character} avatar`}
+                    className="w-24 h-24 rounded-full border-4 border-white/30 shadow-lg"
+                    preview={false}
+                  />
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center border-4 border-white/30 shadow-lg">
+                    <span className="text-white text-2xl font-bold">{skin.character?.charAt(0) || "?"}</span>
+                  </div>
+                )}
+                
+                {/* Glow effect for active skin */}
+                {isActive && (
+                  <div className="absolute inset-0 rounded-full bg-yellow-400 animate-ping opacity-30"></div>
+                )}
+              </motion.div>
+              
+              {/* Character name */}
+              <motion.h3 
+                className="text-xl font-bold text-white mb-1 text-center drop-shadow-lg"
+                animate={isActive ? { 
+                  textShadow: [
+                    "0 0 5px rgba(255,255,255,0.5)",
+                    "0 0 20px rgba(255,215,0,0.8)",
+                    "0 0 5px rgba(255,255,255,0.5)"
+                  ]
+                } : {}}
+                transition={{ 
+                  duration: 2,
+                  repeat: isActive ? Infinity : 0
+                }}>
+                {skin.character}
+              </motion.h3>
+              
+              {/* Skin name */}
+              <p className="text-gray-200 mb-3 text-center">{skin.skin}</p>
+              
+              {/* Rarity badge */}
+              <div className="mb-4">
+                <div
+                  className={`relative px-5 py-2.5 text-white font-extrabold tracking-wide uppercase shadow-[0_8px_22px_rgba(0,0,0,0.25)] bg-gradient-to-r ${wingStyle.from} ${wingStyle.to}`}>
+                  <div className="absolute -inset-1 rounded-md bg-gradient-to-r from-yellow-500 via-amber-300 to-yellow-500 opacity-95 -z-10" />
+                  <div className="absolute inset-0.5 rounded-[6px] bg-gradient-to-r from-rose-700/90 to-amber-600/90 -z-10" />
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 bg-amber-300 shadow-[0_0_0_2px_rgba(255,255,255,0.5)]" />
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 bg-amber-300 shadow-[0_0_0_2px_rgba(255,255,255,0.5)]" />
+                  <div className="absolute inset-0 rounded-[6px] bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.08)_0px,rgba(255,255,255,0.08)_2px,transparent_2px,transparent_6px)] pointer-events-none" />
+                  <motion.div 
+                    className="text-[10px] sm:text-xs leading-none text-center drop-shadow"
+                    animate={{ 
+                      textShadow: [
+                        "0 0 1px rgba(0,0,0,0.5)",
+                        "0 0 3px rgba(255,215,0,0.8)",
+                        "0 0 1px rgba(0,0,0,0.5)"
+                      ]
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      repeat: Infinity
+                    }}>
+                    {skin.rarity || "N/A"}
+                  </motion.div>
+                </div>
+              </div>
+              
+              {/* Stats */}
+              <div className="grid grid-cols-2 gap-3 w-full">
+                <div className="bg-black/30 rounded-lg p-2 text-center">
+                  <div className="text-xs text-gray-300">Nhân vật</div>
+                  <div className="text-white font-semibold truncate">{skin.character}</div>
+                </div>
+                <div className="bg-black/30 rounded-lg p-2 text-center">
+                  <div className="text-xs text-gray-300">Skin</div>
+                  <div className="text-white font-semibold truncate">{skin.skin}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Shine effect on hover */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:-translate-x-full transition-transform duration-1000 pointer-events-none" />
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function BlindBoxPage() {
   const [selectedBlindBox, setSelectedBlindBox] = useState<any>(null);
   const [showAccounts, setShowAccounts] = useState(false);
+  const [showSkinRevealModal, setShowSkinRevealModal] = useState(false);
   
   const {
     data: blindBoxes,
@@ -40,6 +265,12 @@ export default function BlindBoxPage() {
     accounts,
     loading: pageLoading,
     error: pageError,
+    showConfirmModal,
+    pendingSelection,
+    flippedCards,
+    flipSequenceIndex,
+    isFlipping,
+    revealComplete,
     
     // Functions
     setSelectedAccount,
@@ -48,10 +279,33 @@ export default function BlindBoxPage() {
     setShowSkinReveal,
     setAccountsFromBlindBox,
     handleAccountSelection,
+    confirmAccountSelection,
+    cancelAccountSelection,
     handlePurchaseConfirm,
     refreshBlindBoxData,
     setLoading: setPageLoading,
+    startCardFlipping,
+    handleFlipSequence,
+    resetCardFlipping,
   } = useBlindBoxPage();
+
+  // Handle sequential flipping
+  useEffect(() => {
+    if (isFlipping && showSkinReveal) {
+      handleFlipSequence();
+    }
+  }, [isFlipping, flipSequenceIndex, showSkinReveal]);
+
+  // Start flip sequence when skin reveal is shown
+  useEffect(() => {
+    if (showSkinReveal && selectedAccount && selectedAccount.characterSkins) {
+      // Start flipping after a short delay
+      const timer = setTimeout(() => {
+        startCardFlipping();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSkinReveal, selectedAccount]);
 
   // Handle blind box selection
   const handleBlindBoxSelect = async (blindBox: any) => {
@@ -94,17 +348,33 @@ export default function BlindBoxPage() {
   };
 
   // Create a wrapper function for handlePurchaseConfirm that also refreshes the blind box data
-  const handlePurchaseConfirmWithRefresh = async () => {
+  const handleContinueTearing = async () => {
     // Call the original purchase confirm function
     handlePurchaseConfirm();
+    
+    // Close the skin reveal modal
+    setShowSkinReveal(false);
     
     // Refresh the blind box data from API to get the latest state
     await refreshBlindBoxAndAccounts();
   };
 
+  // Create a function to navigate to orders page
+  const handleGoToOrders = () => {
+    // Close the skin reveal modal
+    setShowSkinReveal(false);
+    
+    // Navigate to orders page
+    if (typeof window !== 'undefined') {
+      window.location.href = '/profile';
+    }
+  };
+
   // Create a function to handle modal close with refresh
   const handleCloseWithRefresh = async () => {
     setShowSkinReveal(false);
+    setShowSkinRevealModal(false);
+    resetCardFlipping();
     
     // Refresh the blind box data from API to get the latest state
     await refreshBlindBoxAndAccounts();
@@ -132,6 +402,14 @@ export default function BlindBoxPage() {
   const handleBackToBlindBoxes = () => {
     setShowAccounts(false);
     setSelectedBlindBox(null);
+    setShowSkinReveal(false);
+    resetCardFlipping();
+  };
+
+  // Handle back to accounts list
+  const handleBackToAccounts = () => {
+    setShowSkinReveal(false);
+    resetCardFlipping();
   };
 
   // Render blind boxes list
@@ -554,7 +832,7 @@ export default function BlindBoxPage() {
         </div>
       )}
       
-      {!pageLoading && accounts.length > 0 && (
+      {!pageLoading && accounts.length > 0 && !showSkinReveal && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -792,7 +1070,74 @@ export default function BlindBoxPage() {
         </motion.div>
       )}
       
-      {!pageLoading && accounts.length === 0 && !pageError && (
+      {/* Skin Reveal Section - Display directly on page */}
+      {!pageLoading && showSkinReveal && selectedAccount && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="mt-8">
+          <div className="flex items-center justify-between mb-6">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative">
+              <Button 
+                onClick={handleBackToAccounts}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 border-0 text-white hover:from-purple-700 hover:to-indigo-700 px-6 py-3 text-lg font-bold rounded-full shadow-lg hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300 flex items-center group">
+                <motion.span
+                  className="mr-2"
+                  animate={{ 
+                    x: [-2, 2, -2]
+                  }}
+                  transition={{ 
+                    duration: 1.5,
+                    repeat: Infinity
+                  }}>
+                  ←
+                </motion.span>
+                <motion.span
+                  animate={{ 
+                    opacity: [0.8, 1, 0.8]
+                  }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity
+                  }}>
+                  Quay lại danh sách tài khoản
+                </motion.span>
+              </Button>
+              {/* Glow effect on hover */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-30 blur-lg transition-opacity duration-300 -z-10"></div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-center flex-1">
+              <Title level={2} className="text-2xl font-bold text-white mb-0">
+                <motion.span
+                  animate={{
+                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400">
+                  Skin đặc biệt trong tài khoản
+                </motion.span>
+              </Title>
+            </motion.div>
+            
+            <div className="w-[120px]"></div> {/* Spacer to balance layout */}
+          </div>
+        </motion.div>
+      )}
+      
+      {!pageLoading && accounts.length === 0 && !pageError && !showSkinReveal && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -1063,22 +1408,32 @@ export default function BlindBoxPage() {
         {/* Main Content */ }
         {!showAccounts ? renderBlindBoxes() : renderAccounts()}
 
-        {/* Skin Reveal Modal */ }
-        <SkinRevealModal
-          isOpen={showSkinReveal}
-          onClose={handleCloseWithRefresh}
-          skins={
-            selectedAccount?.characterSkins
-              ? Array.isArray(selectedAccount.characterSkins)
-                ? selectedAccount.characterSkins
-                : typeof selectedAccount.characterSkins === 'string'
-                ? JSON.parse(selectedAccount.characterSkins || "[]")
-                : []
-              : []
-          }
-          account={selectedAccount}
-          onConfirm={handlePurchaseConfirmWithRefresh}
-        />
+        {/* Confirmation Modal */}
+        <Modal
+          title="Xác nhận mua tài khoản"
+          open={showConfirmModal}
+          onOk={confirmAccountSelection}
+          onCancel={cancelAccountSelection}
+          okText="Xác nhận"
+          cancelText="Hủy"
+          centered
+        >
+          <p>Bạn có chắc chắn muốn xé tài khoản này không?</p>
+          <p className="text-gray-500 text-sm mt-2">
+            Sau khi xác nhận, bạn sẽ không thể hủy bỏ giao dịch.
+          </p>
+        </Modal>
+        
+        {/* Skin Reveal Modal */}
+        {showSkinReveal && (
+          <SkinRevealModal
+            isOpen={showSkinReveal}
+            onClose={handleCloseWithRefresh}
+            onContinueTearing={handleContinueTearing}
+            onGoToOrders={handleGoToOrders}
+            account={selectedAccount}
+          />
+        )}
 
         {/* Custom Styles */ }
         <style jsx global>{`
@@ -1209,6 +1564,10 @@ export default function BlindBoxPage() {
 
           .animate-pulse-glow {
             animation: animate-pulse-glow 2s ease-in-out infinite;
+          }
+          
+          .backface-hidden {
+            backface-visibility: hidden;
           }
         `}</style>
       </div>

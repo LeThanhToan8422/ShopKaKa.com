@@ -117,8 +117,7 @@ export default function useAdminAccountModal(
         setLoading(true);
         const loadingMessage = message.loading("Đang xử lý...", 0);
 
-        // Create payload with image files instead of URLs
-        // Backend will handle uploading to Cloudinary
+        console.log("characterSkins : " + JSON.stringify(values));
         const payload = createPayload({
           ...values,
           price: Number(values.price),

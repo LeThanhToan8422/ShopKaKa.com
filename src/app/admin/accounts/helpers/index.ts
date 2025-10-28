@@ -24,8 +24,8 @@ export const createPayload = (values: any): SubmitPayload => {
     additionalInfo: values.additionalInfo || undefined,
     characterSkins: values.characterSkins 
       ? values.characterSkins
-          .filter((skin: any) => skin.id) // Only include skins that have an ID
-          .map((skin: any) => skin.id) // Send only the ID
+          .filter((skin: any) => skin.id)
+          .map((skin: any) => skin.id)
       : [],
   };
 };

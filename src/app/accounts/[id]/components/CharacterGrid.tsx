@@ -18,7 +18,7 @@ export default function CharacterGrid({ items, getRarityClasses }: Props) {
   if (!items?.length) return null;
   return (
     <div className="mb-8">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-5 sm:gap-7">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-5 sm:gap-7 !flex !justify-center !align-items-center">
         {items.map((char, index) => {
           const rc = getRarityClasses(char.rarity);
           return (

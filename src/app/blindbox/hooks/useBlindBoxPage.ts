@@ -11,9 +11,46 @@ export default function useBlindBoxPage() {
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingSelection, setPendingSelection] = useState<{accountId: string, blindBoxId: string} | null>(null);
+  const [flippedCards, setFlippedCards] = useState<boolean[]>([]);
+  const [flipSequenceIndex, setFlipSequenceIndex] = useState(0);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [revealComplete, setRevealComplete] = useState(false);
+
+  // Check if user is authenticated
+  const isAuthenticated = () => {
+    if (typeof window !== 'undefined') {
+      return !!localStorage.getItem('accessToken');
+    }
+    return false;
+  };
 
   // Handle account selection - initiate tear process
   const handleAccountSelection = async (accountId: string, blindBoxId: string) => {
+    // Check if user is authenticated
+    if (!isAuthenticated()) {
+      // Redirect to login page with callback URL
+      if (typeof window !== 'undefined') {
+        const currentPath = window.location.pathname + window.location.search;
+        window.location.href = `/auth/login?callbackUrl=${encodeURIComponent(currentPath)}`;
+      }
+      return;
+    }
+    
+    // Set the pending selection and show confirmation modal
+    setPendingSelection({ accountId, blindBoxId });
+    setShowConfirmModal(true);
+  };
+
+  // Handle confirmation of account selection
+  const confirmAccountSelection = async () => {
+    if (!pendingSelection) return;
+    
+    const { accountId, blindBoxId } = pendingSelection;
+    setShowConfirmModal(false);
+    setPendingSelection(null);
+    
     // Add a dramatic "tearing" animation effect
     const selectedElement = document.getElementById(`account-${accountId}`);
     if (selectedElement) {
@@ -107,7 +144,7 @@ export default function useBlindBoxPage() {
 
       // Call the new API endpoint for blind box tear
       const response = await saleAccountAPI.tearBlindBox({
-        userId,
+        owner: userId,
         accountId: accountId,
         blindBoxId
       });
@@ -130,6 +167,49 @@ export default function useBlindBoxPage() {
     }
   };
 
+  // Start the card flipping sequence
+  const startCardFlipping = () => {
+    if (!selectedAccount || !selectedAccount.characterSkins) return;
+    
+    const skinsData = selectedAccount.characterSkins;
+    if (!Array.isArray(skinsData)) return;
+    
+    setIsFlipping(true);
+  };
+
+  // Handle sequential flipping
+  const handleFlipSequence = () => {
+    if (!isFlipping || flipSequenceIndex >= flippedCards.length) {
+      if (flipSequenceIndex >= flippedCards.length && flippedCards.length > 0) {
+        setRevealComplete(true);
+      }
+      return;
+    }
+    
+    setTimeout(() => {
+      setFlippedCards(prev => {
+        const newFlipped = [...prev];
+        newFlipped[flipSequenceIndex] = true;
+        return newFlipped;
+      });
+      setFlipSequenceIndex(prev => prev + 1);
+    }, 800); // Flip each card with 800ms delay
+  };
+
+  // Reset card flipping state
+  const resetCardFlipping = () => {
+    setFlippedCards([]);
+    setFlipSequenceIndex(0);
+    setIsFlipping(false);
+    setRevealComplete(false);
+  };
+
+  // Cancel account selection
+  const cancelAccountSelection = () => {
+    setShowConfirmModal(false);
+    setPendingSelection(null);
+  };
+
   // Set accounts when a blind box is selected
   const setAccountsFromBlindBox = (saleAccountIds: string[]) => {
     // Convert the array of IDs to account objects with just the ID for now
@@ -138,12 +218,16 @@ export default function useBlindBoxPage() {
     setAccounts(accountObjects);
   };
 
-  // Handle purchase confirmation from skin reveal modal
+  // Handle purchase confirmation from skin reveal
   const handlePurchaseConfirm = async () => {
-    // Show the selected account details (in a real implementation, this would redirect to order page)
-    setOpenedAccount(selectedAccount);
-    setIsBoxOpened(true);
+    // Close the skin reveal modal
     setShowSkinReveal(false);
+    resetCardFlipping();
+    
+    // Redirect to profile page with accounts tab selected
+    if (typeof window !== 'undefined') {
+      window.location.href = '/profile?tab=accounts';
+    }
   };
 
   // Function to refresh blind box data from API after purchase
@@ -172,6 +256,12 @@ export default function useBlindBoxPage() {
     accounts,
     loading,
     error,
+    showConfirmModal,
+    pendingSelection,
+    flippedCards,
+    flipSequenceIndex,
+    isFlipping,
+    revealComplete,
     
     // Functions
     setSelectedAccount,
@@ -180,8 +270,13 @@ export default function useBlindBoxPage() {
     setShowSkinReveal,
     setAccountsFromBlindBox,
     handleAccountSelection,
+    confirmAccountSelection,
+    cancelAccountSelection,
     handlePurchaseConfirm,
     refreshBlindBoxData,
-    setLoading, // Add setLoading function to the return object
+    setLoading,
+    startCardFlipping,
+    handleFlipSequence,
+    resetCardFlipping,
   };
 }

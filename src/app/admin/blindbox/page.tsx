@@ -131,8 +131,19 @@ export default function AdminBlindBoxPage() {
   };
 
   // Handle manage accounts button click
-  const handleManageAccounts = (blindBox: BlindBox) => {
-    setSelectedBlindBox(blindBox);
+  const handleManageAccounts = async (blindBox: BlindBox) => {
+    try {
+      // Fetch the latest blind box data to ensure we have the most up-to-date account list
+      const response = await saleAccountAPI.getBlindBoxById(blindBox.id);
+      if (response.data?.item) {
+        setSelectedBlindBox(response.data.item);
+      } else {
+        setSelectedBlindBox(blindBox);
+      }
+    } catch (err: any) {
+      console.error("Failed to fetch latest blind box data:", err);
+      setSelectedBlindBox(blindBox);
+    }
     setAccountsManagerVisible(true);
   };
 

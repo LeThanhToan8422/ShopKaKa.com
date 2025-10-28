@@ -9,10 +9,12 @@ import OrderFilters from './components/OrderFilters';
 import AccountCard from './components/AccountCard';
 import ExportAccounts from './components/ExportAccounts';
 import EmptyState from './components/EmptyState';
-import { Button, notification } from 'antd';
-import { WalletOutlined } from '@ant-design/icons';
+import { Button, notification, Tabs, Spin, Alert } from 'antd';
+import { WalletOutlined, ShoppingOutlined, UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { paymentSocketService, PaymentNotification } from '@/lib/socket';
+import { saleAccountAPI } from '@/lib/api';
+import PurchasedAccountCard from '@/app/profile/components/PurchasedAccountCard';
 
 // Transform API order to component order format
 const transformOrder = (apiOrder: any) => {
@@ -65,12 +67,16 @@ export default function ProfilePage() {
     getPaymentMethodText,
     formatCurrency,
     formatDate,
+    fetchProfile,
   } = useProfile();
 
   const [filteredOrders, setFilteredOrders] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'accounts'>('profile');
   const [transformedOrders, setTransformedOrders] = useState<any[]>([]);
   const [api, contextHolder] = notification.useNotification();
+  const [purchasedAccounts, setPurchasedAccounts] = useState<any[]>([]);
+  const [accountsLoading, setAccountsLoading] = useState(false);
+  const [accountsError, setAccountsError] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is authenticated
@@ -89,6 +95,41 @@ export default function ProfilePage() {
     }
   }, [profile]);
 
+  // Check URL parameters for tab selection
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam === 'accounts') {
+        setActiveTab('accounts');
+      } else if (tabParam === 'orders') {
+        setActiveTab('orders');
+      }
+    }
+  }, []);
+
+  // Fetch purchased accounts when accounts tab is selected
+  useEffect(() => {
+    const fetchPurchasedAccounts = async () => {
+      if (activeTab === 'accounts' && profile?.id && purchasedAccounts.length === 0) {
+        setAccountsLoading(true);
+        setAccountsError(null);
+        
+        try {
+          const response = await saleAccountAPI.getByUserId(profile.id, 0, 100); // Get first 100 accounts
+          setPurchasedAccounts(response.data.content || []);
+        } catch (err: any) {
+          console.error('Error fetching purchased accounts:', err);
+          setAccountsError('Không thể tải danh sách tài khoản đã mua. Vui lòng thử lại sau.');
+        } finally {
+          setAccountsLoading(false);
+        }
+      }
+    };
+
+    fetchPurchasedAccounts();
+  }, [activeTab, profile?.id, purchasedAccounts.length]);
+
   // Initialize WebSocket connection and listen for payment notifications
   useEffect(() => {
     if (profile?.id) {
@@ -105,8 +146,8 @@ export default function ProfilePage() {
             duration: 10,
           });
           
-          // Optionally refresh user profile to update balance
-          // fetchProfile();
+          // Refresh user profile to update balance
+          fetchProfile();
         }
       };
       
@@ -118,7 +159,7 @@ export default function ProfilePage() {
         paymentSocketService.disconnect();
       };
     }
-  }, [profile?.id, api]);
+  }, [profile?.id, api, fetchProfile]);
 
   if (loading) {
     return (
@@ -171,6 +212,17 @@ export default function ProfilePage() {
     balance: profile.balance || 0, // Use the actual balance from the profile
   };
 
+  const handleTabChange = (key: string) => {
+    setActiveTab(key as 'profile' | 'orders' | 'accounts');
+    
+    // Update URL without reloading the page
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', key);
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {contextHolder}
@@ -192,92 +244,130 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <StatsCards 
-          statistics={statistics} 
-          formatCurrency={formatCurrency} 
-        />
-
         {/* Tabs */}
-        <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              <button
-                onClick={() => setActiveTab('profile')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'profile'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Thông tin cá nhân
-              </button>
-              <button
-                onClick={() => setActiveTab('orders')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'orders'
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Tài khoản đã mua ({profile.orders.length})
-              </button>
-            </nav>
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        {activeTab === 'profile' && (
-          <ProfileForm
-            profile={profile}
-            onUpdate={updateProfile}
-            updating={updating}
-          />
-        )}
-
-        {activeTab === 'orders' && (
-          <div>
-            {/* Export Accounts */}
-            <ExportAccounts
-              orders={transformedOrders}
-              formatCurrency={formatCurrency}
-              formatDate={formatDate}
-            />
-
-            {/* Filters */}
-            <OrderFilters
-              orders={transformedOrders}
-              onFilteredOrders={setFilteredOrders}
-              getOrderStatusText={getOrderStatusText}
-            />
-
-            {/* Orders List */}
-            {filteredOrders.length === 0 ? (
-              <EmptyState
-                title={profile.orders.length === 0 ? 'Chưa có tài khoản nào đã mua thành công' : 'Không tìm thấy tài khoản phù hợp'}
-                description={profile.orders.length === 0 
-                  ? 'Chỉ hiển thị các tài khoản đã thanh toán thành công. Hãy mua tài khoản đầu tiên của bạn!' 
-                  : 'Thử thay đổi bộ lọc để tìm tài khoản khác'
-                }
-                showButton={profile.orders.length === 0}
-                buttonText="Xem tài khoản có sẵn"
-              />
-            ) : (
-              <div className="space-y-6">
-                {filteredOrders.map((order: any) => (
-                  <AccountCard
-                    key={order.userId}
-                    order={order}
-                    formatCurrency={formatCurrency}
-                    formatDate={formatDate}
-                    getOrderStatusText={getOrderStatusText}
-                    getOrderStatusColor={getOrderStatusColor}
+        <Tabs
+          activeKey={activeTab}
+          onChange={handleTabChange}
+          items={[
+            {
+              key: 'profile',
+              label: (
+                <span>
+                  <UserOutlined />
+                  Thông tin cá nhân
+                </span>
+              ),
+              children: (
+                <div>
+                  {/* Stats Cards */}
+                  <StatsCards 
+                    statistics={statistics} 
+                    formatCurrency={formatCurrency} 
                   />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+
+                  {/* Profile Form */}
+                  <ProfileForm 
+                    profile={profile}
+                    updating={updating}
+                    onUpdate={updateProfile}
+                  />
+                </div>
+              ),
+            },
+            {
+              key: 'orders',
+              label: (
+                <span>
+                  <ShoppingOutlined />
+                  Đơn hàng
+                </span>
+              ),
+              children: (
+                <div>
+                  {/* Order Filters */}
+                  <OrderFilters 
+                    orders={transformedOrders}
+                    onFilteredOrders={setFilteredOrders}
+                    getOrderStatusText={getOrderStatusText}
+                  />
+
+                  {/* Orders List */}
+                  <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredOrders.length > 0 ? (
+                      filteredOrders.map((order) => (
+                        <AccountCard
+                          key={order.orderNumber}
+                          order={order}
+                          formatCurrency={formatCurrency}
+                          formatDate={formatDate}
+                          getOrderStatusText={getOrderStatusText}
+                          getOrderStatusColor={getOrderStatusColor}
+                        />
+                      ))
+                    ) : (
+                      <div className="col-span-full">
+                        <EmptyState 
+                          title="Không tìm thấy đơn hàng nào" 
+                          description="Không có đơn hàng nào phù hợp với bộ lọc hiện tại của bạn."
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: 'accounts',
+              label: (
+                <span>
+                  <ShoppingOutlined />
+                  Tài khoản đã mua
+                </span>
+              ),
+              children: (
+                <div>
+                  {accountsLoading ? (
+                    <div className="flex justify-center items-center py-12">
+                      <Spin size="large" />
+                      <span className="ml-4 text-gray-600">Đang tải tài khoản...</span>
+                    </div>
+                  ) : accountsError ? (
+                    <Alert
+                      message="Lỗi"
+                      description={accountsError}
+                      type="error"
+                      showIcon
+                    />
+                  ) : purchasedAccounts.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {purchasedAccounts.map((account: any) => (
+                        <PurchasedAccountCard
+                          key={account.id}
+                          account={account}
+                          formatCurrency={formatCurrency}
+                          formatDate={formatDate}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="text-6xl mb-4">📦</div>
+                      <p className="text-gray-500 text-lg block mb-2">
+                        Bạn chưa mua tài khoản nào
+                      </p>
+                      <p className="text-gray-400 mb-6">
+                        Hãy quay lại cửa hàng để mua tài khoản
+                      </p>
+                      <Link href="/accounts">
+                        <Button type="primary">Mua tài khoản</Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ),
+            },
+          ]}
+        />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Button, Upload, message, Table, Tag, Space, Popconfirm, notification } from "antd";
 import { UploadOutlined, UserAddOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
 import { saleAccountAPI } from "@/lib/api";
@@ -21,10 +21,16 @@ export default function BlindBoxAccountsManager({
   onClose,
   onRefresh
 }: BlindBoxAccountsManagerProps) {
+  const [localBlindBox, setLocalBlindBox] = useState<BlindBox>(blindBox);
   const [uploading, setUploading] = useState(false);
   const [accountSelectorVisible, setAccountSelectorVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
+
+  // Update local blind box when prop changes
+  useEffect(() => {
+    setLocalBlindBox(blindBox);
+  }, [blindBox]);
 
   // Handle adding selected accounts (new improved method)
   const handleAddSelectedAccounts = async (accountIds: string[]) => {
@@ -37,7 +43,19 @@ export default function BlindBoxAccountsManager({
         message: 'Thành công',
         description: `Thêm ${accountIds.length} tài khoản thành công!`
       });
+      
+      // Refresh the parent data
       onRefresh();
+      
+      // Refresh the local blind box data to show updated account list
+      try {
+        const response = await saleAccountAPI.getBlindBoxById(blindBox.id);
+        if (response.data?.item) {
+          setLocalBlindBox(response.data.item);
+        }
+      } catch (err: any) {
+        console.error("Failed to refresh blind box data:", err);
+      }
     } catch (err: any) {
       notification.error({
         message: 'Lỗi',
@@ -57,6 +75,16 @@ export default function BlindBoxAccountsManager({
         description: 'Upload file thành công!'
       });
       onRefresh();
+      
+      // Refresh the local blind box data to show updated account list
+      try {
+        const response = await saleAccountAPI.getBlindBoxById(blindBox.id);
+        if (response.data?.item) {
+          setLocalBlindBox(response.data.item);
+        }
+      } catch (err: any) {
+        console.error("Failed to refresh blind box data:", err);
+      }
     } catch (err: any) {
       notification.error({
         message: 'Lỗi',
@@ -164,10 +192,10 @@ export default function BlindBoxAccountsManager({
 
           {/* Accounts list */}
           <div>
-            <h3 className="text-lg font-medium mb-3">Danh sách tài khoản ({blindBox.saleAccounts?.length || 0})</h3>
-            {blindBox.saleAccounts && blindBox.saleAccounts.length > 0 ? (
+            <h3 className="text-lg font-medium mb-3">Danh sách tài khoản ({localBlindBox.saleAccounts?.length || 0})</h3>
+            {localBlindBox.saleAccounts && localBlindBox.saleAccounts.length > 0 ? (
               <Table
-                dataSource={blindBox.saleAccounts.map((id, index) => ({ id, key: index }))}
+                dataSource={localBlindBox.saleAccounts.map((id, index) => ({ id, key: index }))}
                 columns={columns}
                 pagination={false}
                 size="small"
@@ -184,7 +212,7 @@ export default function BlindBoxAccountsManager({
         visible={accountSelectorVisible}
         onClose={() => setAccountSelectorVisible(false)}
         onAddAccounts={handleAddSelectedAccounts}
-        existingAccountIds={blindBox.saleAccounts || []}
+        existingAccountIds={localBlindBox.saleAccounts || []}
       />
 
       {/* Account Details Modal */}

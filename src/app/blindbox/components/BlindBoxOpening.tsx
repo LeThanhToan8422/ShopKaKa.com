@@ -554,7 +554,7 @@ export default function BlindBoxOpening({
               <Button
                 size="large"
                 className="bg-white/10 border-white/20 text-white hover:bg-white/20 px-8 py-6 text-lg font-bold rounded-full shadow-lg hover:shadow-[0_0_25px_rgba(255,255,255,0.2)] transition-all duration-300"
-                onClick={() => (window.location.href = "/")}>
+                onClick={() => window.history.back()}>
                 <motion.span
                   animate={{ 
                     opacity: [0.8, 1, 0.8]

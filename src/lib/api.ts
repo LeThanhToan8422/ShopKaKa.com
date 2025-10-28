@@ -106,6 +106,9 @@ export const saleAccountAPI = {
     // Always use multipart form data for consistency
     const formData = new FormData();
     
+    // Append the ID to the form data
+    formData.append('id', id);
+    
     // Append all the data fields individually
     Object.keys(data).forEach(key => {
       // Handle arrays specially - append each item individually
@@ -125,7 +128,7 @@ export const saleAccountAPI = {
       });
     }
     
-    return apiClient.put(`/saleAccount/${id}`, formData, {
+    return apiClient.put('/saleAccount', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -139,7 +142,7 @@ export const saleAccountAPI = {
     minHeroes?: number; 
     minSkins?: number;
     price?: number;
-    blindBoxId?: string; // Add blindBoxId filter parameter
+    blindBoxId?: string;
     page?: number; 
     size?: number;
   }) => {
@@ -152,7 +155,7 @@ export const saleAccountAPI = {
       });
     }
     const queryString = queryParams.toString();
-    return apiClient.get(`/saleAccount${queryString ? `?${queryString}` : ''}`);
+    return apiClient.get(`/saleAccount/getAll${queryString ? `?${queryString}` : ''}`);
   },
   create: (data: any, files?: File[]) => {
     // Always use multipart form data for consistency
@@ -212,10 +215,10 @@ export const saleAccountAPI = {
       });
     }
     const queryString = queryParams.toString();
-    return apiClient.get(`/blindBox${queryString ? `?${queryString}` : ''}`);
+    return apiClient.get(`/blindBox/getAll${queryString ? `?${queryString}` : ''}`);
   },
   // New endpoint for tearing a blind box
-  tearBlindBox: (data: { userId: string; accountId: string; blindBoxId: string }) => 
+  tearBlindBox: (data: { owner: string; accountId: string; blindBoxId: string }) => 
     apiClient.post('/blindBox/tear', data),
   // New endpoint for creating a blind box
   createBlindBox: (data: { name: string; price?: number; saleAccounts?: string[] }) => 
