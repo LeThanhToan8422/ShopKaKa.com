@@ -1,37 +1,70 @@
 "use client";
 
-import { Button, Modal, Spin } from "antd";
-import usePurchase from "../hooks/usePurchase";
+import { Button, Modal, Spin, Popconfirm } from "antd";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { saleAccountAPI, userAPI } from "@/lib/api";
+import { App } from "antd";
 
 type Props = {
-  accountId?: string;
-  price?: number;
-  onClick?: () => void;
+  accountId: string;
+  price: number;
+  onPurchaseSuccess?: () => void;
 };
 
-export default function PurchaseButton({ accountId, price, onClick }: Props) {
-  const {
-    isModalOpen,
-    setIsModalOpen,
-    checkingPending,
-    handlePurchase: handlePurchaseLogic,
-  } = usePurchase(accountId, price);
-  
+export default function QuickPurchaseButton({ accountId, price, onPurchaseSuccess }: Props) {
+  const router = useRouter();
+  const { message } = App.useApp();
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  
-  const handlePurchase = () => {
-    if (onClick) {
-      onClick();
-    } else {
-      // Show confirmation dialog before proceeding with purchase
-      setIsConfirmModalOpen(true);
+
+  // Check if user is authenticated
+  const isAuthenticated = typeof window !== 'undefined' ? !!localStorage.getItem('accessToken') : false;
+
+  const handlePurchaseClick = () => {
+    if (!isAuthenticated) {
+      message.warning('Vui lòng đăng nhập để mua tài khoản');
+      router.push('/auth/login');
+      return;
     }
+    
+    // Show confirmation dialog
+    setIsConfirmModalOpen(true);
   };
 
-  const handleConfirmPurchase = () => {
+  const handleConfirmPurchase = async () => {
     setIsConfirmModalOpen(false);
-    handlePurchaseLogic();
+    setIsProcessing(true);
+    
+    try {
+      // Fetch user profile to get user ID
+      const profileResponse = await userAPI.getProfile();
+      const userId = profileResponse.data.id;
+      
+      if (!userId) {
+        message.error('Không thể lấy thông tin người dùng');
+        return;
+      }
+      
+      // Call the buy endpoint
+      const response = await saleAccountAPI.buy({ userId, accountId });
+      
+      if (response.data.success) {
+        message.success('Mua tài khoản thành công!');
+        // Redirect to profile page to show purchased account
+        router.push('/profile?tab=accounts');
+        if (onPurchaseSuccess) {
+          onPurchaseSuccess();
+        }
+      } else {
+        message.error(response.data.message || 'Mua tài khoản thất bại');
+      }
+    } catch (error) {
+      console.error('Purchase error:', error);
+      message.error('Có lỗi xảy ra khi mua tài khoản');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -39,24 +72,18 @@ export default function PurchaseButton({ accountId, price, onClick }: Props) {
       <Button
         type="primary"
         size="large"
-        className="w-full h-14 text-lg font-bold rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] relative overflow-hidden group"
+        className="flex-1 rounded-xl shadow-md transition-all duration-300 ease-out group-hover:shadow-xl group-hover:scale-105 relative overflow-hidden py-2.5 font-bold text-sm flex items-center justify-center text-white"
         style={{
           background:
-            "linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%)",
-          border: "none",
-          boxShadow: "0 10px 25px rgba(245, 158, 11, 0.3)",
+            "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)",
         }}
-        icon={
-          <span className="text-xl group-hover:scale-110 transition-transform duration-300">
-            🛒
-          </span>
-        }
-        onClick={handlePurchase}>
-        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <span className="relative z-10 drop-shadow-sm">Mua ngay</span>
+        icon={<span className="mr-1.5">🛒</span>}
+        onClick={handlePurchaseClick}
+        loading={isProcessing}>
+        Mua ngay
       </Button>
 
-      {/* Enhanced Confirmation Modal */}
+      {/* Confirmation Modal */}
       <Modal
         open={isConfirmModalOpen}
         onOk={handleConfirmPurchase}
@@ -109,36 +136,24 @@ export default function PurchaseButton({ accountId, price, onClick }: Props) {
       {/* Processing Modal */}
       <Modal
         title="Đang xử lý đơn hàng"
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
+        open={isProcessing}
+        onCancel={() => setIsProcessing(false)}
         footer={null}
         width={400}
         centered
       >
         <div className="mt-6">
-          {checkingPending ? (
-            <div className="flex flex-col items-center">
-              <div className="relative w-20 h-20 mb-6">
-                <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
-                <div className="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl">⚡</span>
-                </div>
+          <div className="flex flex-col items-center">
+            <div className="relative w-20 h-20 mb-6">
+              <div className="absolute inset-0 rounded-full border-4 border-blue-200"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-2xl">⚡</span>
               </div>
-              <p className="text-gray-600 text-center">Đang xử lý yêu cầu mua tài khoản...</p>
-              <p className="text-gray-500 text-sm mt-2">Vui lòng không đóng trình duyệt</p>
             </div>
-          ) : (
-            <div className="text-center">
-              <div className="relative w-20 h-20 mx-auto mb-6">
-                <div className="absolute inset-0 rounded-full bg-green-100 flex items-center justify-center animate-ping"></div>
-                <div className="relative w-full h-full rounded-full bg-green-500 flex items-center justify-center">
-                  <span className="text-3xl text-white">✓</span>
-                </div>
-              </div>
-              <p className="text-lg mb-4">Đang chuyển hướng đến trang tài khoản của bạn...</p>
-            </div>
-          )}
+            <p className="text-gray-600 text-center">Đang xử lý yêu cầu mua tài khoản...</p>
+            <p className="text-gray-500 text-sm mt-2">Vui lòng không đóng trình duyệt</p>
+          </div>
         </div>
       </Modal>
     </>

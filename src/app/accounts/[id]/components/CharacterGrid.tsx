@@ -24,7 +24,7 @@ export default function CharacterGrid({ items, getRarityClasses }: Props) {
           return (
             <div
               key={`${char.character}-${index}`}
-              className={`group relative z-0 rounded-2xl p-5 text-center transform-gpu transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.05] hover:z-10 backdrop-blur-sm border border-white/40 shadow-lg cursor-pointer min-w-[150px]`}
+              className={`group relative z-0 rounded-2xl p-5 text-center transform-gpu transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.05] hover:z-10 backdrop-blur-sm border border-white/40 shadow-lg cursor-pointer min-w-[150px] bg-white/10 dark:bg-white/5`}
               style={{
                 backgroundImage: char.background
                   ? `url(${char.background})`

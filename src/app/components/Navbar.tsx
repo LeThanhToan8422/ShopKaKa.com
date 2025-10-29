@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { userAPI } from "@/lib/api";
+import ShopKaKaLogo from "./ShopKaKaLogo";
 
 export default function Navbar() {
   const [user, setUser] = useState<{
@@ -71,7 +72,7 @@ export default function Navbar() {
       <header className="border-b bg-white/60 backdrop-blur supports-[backdrop-filter]:bg-white/50">
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
           <Link href="/" className="font-semibold">
-            LQ Shop
+            <ShopKaKaLogo size="md" variant="combined" />
           </Link>
           <nav className="flex items-center gap-4 text-sm">
             <Link href="/accounts">Tài khoản</Link>
@@ -129,7 +130,7 @@ export default function Navbar() {
     <header className="border-b bg-white/60 backdrop-blur supports-[backdrop-filter]:bg-white/50">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
         <Link href="/" className="font-semibold">
-          LQ Shop
+          <ShopKaKaLogo size="md" variant="combined" />
         </Link>
         <nav className="flex items-center gap-4 text-sm">
           <Link href="/accounts">Tài khoản</Link>

@@ -204,6 +204,9 @@ export const saleAccountAPI = {
     const queryString = queryParams.toString();
     return apiClient.get(`/saleAccount/user/${userId}${queryString ? `?${queryString}` : ''}`);
   },
+  // New endpoint for buying an account
+  buy: (data: { userId: string; accountId: string }) => 
+    apiClient.post('/saleAccount/buy', data),
   // New endpoint for fetching blind boxes
   getBlindBoxes: (params?: { page?: number; size?: number }) => {
     const queryParams = new URLSearchParams();
@@ -251,6 +254,14 @@ export const saleAccountAPI = {
 export const orderAPI = {
   getAll: () => apiClient.get('/orders'),
   create: (data: any) => apiClient.post('/orders', data),
+  // New endpoint for fetching user orders
+  getUserOrders: (params: { type: string; userId: string; page: number; size: number }) => {
+    const queryParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      queryParams.append(key, String(value));
+    });
+    return apiClient.get(`/orders/user?${queryParams.toString()}`);
+  },
 };
 
 // Payment webhook

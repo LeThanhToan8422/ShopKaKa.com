@@ -420,7 +420,7 @@ export default function BlindBoxPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
         className="text-center mb-8">
-        <Title level={2} className="text-2xl font-bold text-white mb-6">
+        <Title level={2} className="text-2xl font-bold text-gray-800 dark:text-white mb-6">
           <motion.span
             animate={{
               backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
@@ -430,7 +430,7 @@ export default function BlindBoxPage() {
               repeat: Infinity,
               ease: "linear"
             }}
-            className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400">
+            className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 dark:from-purple-400 dark:via-pink-400 dark:to-yellow-400">
             Chọn túi mù bạn muốn mở
           </motion.span>
         </Title>
@@ -440,7 +440,7 @@ export default function BlindBoxPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}>
-        <Text className="text-gray-300 mb-6 block text-lg">
+        <Text className="text-gray-600 dark:text-gray-300 mb-6 block text-lg">
           <motion.span
             animate={{ 
               opacity: [0.7, 1, 0.7]
@@ -485,7 +485,7 @@ export default function BlindBoxPage() {
             <div className="absolute inset-0 w-16 h-16 border-4 border-yellow-500 border-b-transparent rounded-full animate-spin" style={{ animationDuration: "1.5s" }}></div>
           </motion.div>
           <motion.p 
-            className="text-white text-xl ml-4 self-center"
+            className="text-gray-800 dark:text-white text-xl ml-4 self-center"
             animate={{ 
               opacity: [0.7, 1, 0.7]
             }}
@@ -514,7 +514,7 @@ export default function BlindBoxPage() {
                   whileTap={{ scale: 0.95 }}
                   className="relative cursor-pointer"
                   onClick={() => handleBlindBoxSelect(blindBox)}>
-                  <div className="group bg-gradient-to-br from-purple-900/50 to-blue-900/50 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20 transition-all duration-500 hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:border-yellow-400/70 hover:scale-105 relative z-0">
+                  <div className="group bg-gradient-to-br from-purple-900/50 to-blue-900/50 dark:from-purple-900/70 dark:to-blue-900/70 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20 transition-all duration-500 hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:border-yellow-400/70 hover:scale-105 relative z-0">
                     {/* Animated background glow */}
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 animate-pulse"></div>
                     
@@ -598,7 +598,7 @@ export default function BlindBoxPage() {
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-full group-hover:-translate-x-full transition-transform duration-1000"></div>
                     
                     {/* Content */ }
-                    <div className="p-5 bg-black/30 backdrop-blur-sm relative z-10">
+                    <div className="p-5 bg-black/30 dark:bg-black/40 backdrop-blur-sm relative z-10">
                       <div className="flex justify-between items-center mb-3">
                         <motion.h3 
                           className="text-white font-bold text-xl truncate"
@@ -705,11 +705,11 @@ export default function BlindBoxPage() {
                   className="text-6xl mb-4">
                   🎁
                 </motion.div>
-                <Text className="text-gray-300 text-lg font-medium">
+                <Text className="text-gray-600 dark:text-gray-300 text-lg font-medium">
                   Không tìm thấy túi mù nào
                 </Text>
                 <motion.p 
-                  className="text-gray-400 mt-2"
+                  className="text-gray-500 dark:text-gray-400 mt-2"
                   animate={{ 
                     opacity: [0.7, 1, 0.7]
                   }}
@@ -769,7 +769,7 @@ export default function BlindBoxPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="text-center flex-1">
-          <Title level={2} className="text-2xl font-bold text-white mb-0">
+          <Title level={2} className="text-2xl font-bold text-gray-800 dark:text-white mb-0">
             <motion.span
               animate={{
                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
@@ -779,7 +779,7 @@ export default function BlindBoxPage() {
                 repeat: Infinity,
                 ease: "linear"
               }}
-              className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400">
+              className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 dark:from-purple-400 dark:via-pink-400 dark:to-yellow-400">
               Tài khoản trong túi mù &quot;{selectedBlindBox?.name}&quot;
             </motion.span>
           </Title>
@@ -819,7 +819,7 @@ export default function BlindBoxPage() {
             <div className="absolute inset-0 w-16 h-16 border-4 border-yellow-500 border-b-transparent rounded-full animate-spin" style={{ animationDuration: "1.5s" }}></div>
           </motion.div>
           <motion.p 
-            className="text-white text-xl ml-4 self-center"
+            className="text-gray-800 dark:text-white text-xl ml-4 self-center"
             animate={{ 
               opacity: [0.7, 1, 0.7]
             }}
@@ -841,7 +841,7 @@ export default function BlindBoxPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}>
-            <Title level={3} className="text-xl font-bold text-white mb-6">
+            <Title level={3} className="text-xl font-bold text-gray-800 dark:text-white mb-6">
               <motion.span
                 animate={{
                   backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
@@ -851,7 +851,7 @@ export default function BlindBoxPage() {
                   repeat: Infinity,
                   ease: "linear"
                 }}
-                className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+                className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400">
                 Chọn tài khoản bạn muốn mua
               </motion.span>
             </Title>
@@ -861,7 +861,7 @@ export default function BlindBoxPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}>
-            <Text className="text-gray-300 mb-6 block text-lg">
+            <Text className="text-gray-600 dark:text-gray-300 mb-6 block text-lg">
               <motion.span
                 animate={{ 
                   opacity: [0.7, 1, 0.7]
@@ -888,7 +888,7 @@ export default function BlindBoxPage() {
                     className="relative cursor-pointer"
                     id={`account-${acc.id}`}
                     onClick={() => handleAccountSelection(acc.id, selectedBlindBox.id)}>
-                    <div className="group bg-gradient-to-br from-purple-900/50 to-blue-900/50 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20 transition-all duration-500 hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:border-yellow-400/70 hover:scale-105 relative z-0">
+                    <div className="group bg-gradient-to-br from-purple-900/50 to-blue-900/50 dark:from-purple-900/70 dark:to-blue-900/70 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20 transition-all duration-500 hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:border-yellow-400/70 hover:scale-105 relative z-0">
                       {/* Sparkle effect container */ }
                       <div className="absolute inset-0 pointer-events-none">
                         <div className="absolute top-4 right-4 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
@@ -982,7 +982,7 @@ export default function BlindBoxPage() {
                       </div>
 
                       {/* Content */ }
-                      <div className="p-5 bg-black/30 backdrop-blur-sm relative z-10">
+                      <div className="p-5 bg-black/30 dark:bg-black/40 backdrop-blur-sm relative z-10">
                         <div className="flex justify-between items-center mb-3">
                           <motion.h3 
                             className="text-white font-bold text-xl"
@@ -1116,7 +1116,7 @@ export default function BlindBoxPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="text-center flex-1">
-              <Title level={2} className="text-2xl font-bold text-white mb-0">
+              <Title level={2} className="text-2xl font-bold text-gray-800 dark:text-white mb-0">
                 <motion.span
                   animate={{
                     backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
@@ -1126,7 +1126,7 @@ export default function BlindBoxPage() {
                     repeat: Infinity,
                     ease: "linear"
                   }}
-                  className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400">
+                  className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-500 dark:from-purple-400 dark:via-pink-400 dark:to-yellow-400">
                   Skin đặc biệt trong tài khoản
                 </motion.span>
               </Title>
@@ -1157,11 +1157,11 @@ export default function BlindBoxPage() {
                   className="text-6xl mb-4">
                   ❓
                 </motion.div>
-                <Text className="text-gray-300 text-lg font-medium">
+                <Text className="text-gray-600 dark:text-gray-300 text-lg font-medium">
                   Không tìm thấy tài khoản nào trong túi mù này
                 </Text>
                 <motion.p 
-                  className="text-gray-400 mt-2"
+                  className="text-gray-500 dark:text-gray-400 mt-2"
                   animate={{ 
                     opacity: [0.7, 1, 0.7]
                   }}
@@ -1209,7 +1209,7 @@ export default function BlindBoxPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-12 px-4">
+    <div className="min-h-screen py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header with enhanced visual effects */}
         <motion.div
@@ -1240,9 +1240,9 @@ export default function BlindBoxPage() {
             className="relative z-10">
             <Title
               level={1}
-              className="text-4xl md:text-7xl font-bold text-white mb-6 relative z-10">
+              className="text-4xl md:text-7xl font-bold text-gray-800 dark:text-white mb-6 relative z-10">
               <motion.span 
-                className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 drop-shadow-[0_5px_15px_rgba(255,140,0,0.5)]"
+                className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-500 to-pink-500 dark:from-yellow-400 dark:via-orange-400 dark:to-pink-400 drop-shadow-[0_5px_15px_rgba(255,140,0,0.5)]"
                 animate={{
                   backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                 }}
@@ -1294,7 +1294,7 @@ export default function BlindBoxPage() {
             transition={{ delay: 0.5, duration: 0.8 }}
             className="max-w-3xl mx-auto">
             <motion.p 
-              className="text-xl md:text-3xl text-gray-200 font-medium"
+              className="text-xl md:text-3xl text-gray-600 dark:text-gray-300 font-medium"
               animate={{ 
                 opacity: [0.8, 1, 0.8]
               }}
@@ -1401,7 +1401,7 @@ export default function BlindBoxPage() {
         {/* Loading Spinner */ }
         {pageLoading && (
           <div className="flex justify-center my-12">
-            <Spin size="large" className="text-white" />
+            <Spin size="large" className="text-gray-800 dark:text-white" />
           </div>
         )}
         
@@ -1419,7 +1419,7 @@ export default function BlindBoxPage() {
           centered
         >
           <p>Bạn có chắc chắn muốn xé tài khoản này không?</p>
-          <p className="text-gray-500 text-sm mt-2">
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
             Sau khi xác nhận, bạn sẽ không thể hủy bỏ giao dịch.
           </p>
         </Modal>

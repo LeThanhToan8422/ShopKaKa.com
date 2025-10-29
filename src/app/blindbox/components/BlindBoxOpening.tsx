@@ -115,7 +115,7 @@ export default function BlindBoxOpening({
           transition={{ delay: 0.5 }}
           className="mt-10 text-center">
           <motion.h3 
-            className="text-3xl font-bold text-white mb-3"
+            className="text-3xl font-bold text-gray-800 dark:text-white mb-3"
             animate={{ 
               textShadow: [
                 "0 0 5px rgba(255,255,255,0.5)",
@@ -136,7 +136,7 @@ export default function BlindBoxOpening({
                 repeat: Infinity,
                 ease: "linear"
               }}
-              className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500"
+              className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-500 to-pink-500 dark:from-yellow-400 dark:via-orange-400 dark:to-pink-400"
               style={{
                 backgroundImage: "linear-gradient(90deg, #fbbf24, #f97316, #ec4899, #f97316, #fbbf24)",
                 backgroundSize: "300% 300%"
@@ -145,7 +145,7 @@ export default function BlindBoxOpening({
             </motion.span>
           </motion.h3>
           <motion.p 
-            className="text-gray-200 text-lg mb-8"
+            className="text-gray-600 dark:text-gray-300 text-lg mb-8"
             animate={{ 
               opacity: [0.7, 1, 0.7]
             }}
@@ -196,7 +196,7 @@ export default function BlindBoxOpening({
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.8 }}
         className="w-full max-w-5xl">
-        <Card className="bg-gradient-to-br from-purple-900/50 to-blue-900/50 backdrop-blur-lg border-0 rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+        <Card className="bg-gradient-to-br from-purple-900/50 to-blue-900/50 dark:from-purple-900/70 dark:to-blue-900/70 backdrop-blur-lg border-0 rounded-3xl shadow-2xl overflow-hidden border border-white/20">
           <div className="text-center mb-8">
             <motion.div
               initial={{ scale: 0 }}
@@ -225,7 +225,7 @@ export default function BlindBoxOpening({
               </div>
             </motion.div>
             <motion.h2 
-              className="text-4xl font-bold text-white mb-3"
+              className="text-4xl font-bold text-gray-800 dark:text-white mb-3"
               animate={{ 
                 textShadow: [
                   "0 0 5px rgba(255,255,255,0.5)",
@@ -246,7 +246,7 @@ export default function BlindBoxOpening({
                   repeat: Infinity,
                   ease: "linear"
                 }}
-                className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500"
+                className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-500 via-orange-500 to-pink-500 dark:from-yellow-400 dark:via-orange-400 dark:to-pink-400"
                 style={{
                   backgroundImage: "linear-gradient(90deg, #fbbf24, #f97316, #ec4899, #f97316, #fbbf24)",
                   backgroundSize: "300% 300%"
@@ -255,7 +255,7 @@ export default function BlindBoxOpening({
               </motion.span>
             </motion.h2>
             <motion.p 
-              className="text-gray-200 text-xl"
+              className="text-gray-600 dark:text-gray-300 text-xl"
               animate={{ 
                 opacity: [0.8, 1, 0.8]
               }}
@@ -265,7 +265,7 @@ export default function BlindBoxOpening({
               }}>
               Bạn đã chọn thành công tài khoản với mệnh giá{" "}
               <motion.span 
-                className="text-yellow-400 font-bold"
+                className="text-yellow-500 dark:text-yellow-400 font-bold"
                 animate={{ 
                   textShadow: [
                     "0 0 2px rgba(255,255,255,0.3)",
@@ -287,7 +287,7 @@ export default function BlindBoxOpening({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2 }}
-              className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
+              className="bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10">
               <motion.h3 
                 animate={{
                   backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
@@ -297,7 +297,7 @@ export default function BlindBoxOpening({
                   repeat: Infinity,
                   ease: "linear"
                 }}
-                className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 text-2xl font-bold mb-6 pb-2 border-b border-white/20">
+                className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-600 to-blue-500 dark:from-purple-400 dark:via-pink-400 dark:to-blue-400 text-2xl font-bold mb-6 pb-2 border-b border-white/20">
                 Thông tin tài khoản
               </motion.h3>
               
@@ -486,7 +486,7 @@ export default function BlindBoxOpening({
                     animate={{ opacity: 1, height: "auto" }}
                     transition={{ duration: 0.8, delay: 0.5 }}
                     className="mt-8">
-                    <h4 className="text-xl font-bold text-white mb-4 pb-2 border-b border-white/20">
+                    <h4 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b border-white/20">
                       Skin nổi bật trong tài khoản
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -497,7 +497,7 @@ export default function BlindBoxOpening({
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.7 + index * 0.2 }}
                           whileHover={{ y: -5, scale: 1.03 }}
-                          className="bg-gradient-to-br from-purple-800/50 to-pink-800/50 rounded-xl p-4 border border-white/10 backdrop-blur-sm hover:shadow-lg hover:border-yellow-400/50 transition-all duration-300">
+                          className="bg-gradient-to-br from-purple-800/50 to-pink-800/50 dark:from-purple-800/70 dark:to-pink-800/70 rounded-xl p-4 border border-white/10 backdrop-blur-sm hover:shadow-lg hover:border-yellow-400/50 transition-all duration-300">
                           <div className="flex items-center mb-3">
                             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-white font-bold mr-3">
                               {skin.rarity?.charAt(0) || "?"}

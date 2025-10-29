@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { Button, Card, Typography } from "antd";
 import { motion } from "framer-motion";
+import ShopKaKaLogo from "./components/ShopKaKaLogo";
 
 const { Title, Paragraph } = Typography;
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-12 px-4">
+    <div className="min-h-screen py-12 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <motion.div
@@ -16,14 +17,17 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           className="text-center mb-16 mt-8">
+          <div className="flex justify-center mb-6">
+            <ShopKaKaLogo size="xl" variant="combined" animated={true} />
+          </div>
           <Title
             level={1}
-            className="text-4xl md:text-6xl font-bold text-white mb-6">
+            className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-white mb-6">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500">
-              LQ SHOP
+              Cửa hàng tài khoản Liên Quân
             </span>
           </Title>
-          <Paragraph className="text-xl text-gray-300 max-w-3xl mx-auto mb-10">
+          <Paragraph className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-10">
             Cửa hàng tài khoản Liên Quân uy tín, chất lượng hàng đầu Việt Nam
           </Paragraph>
 
@@ -53,42 +57,42 @@ export default function Home() {
           className="mb-16">
           <Title
             level={2}
-            className="text-3xl font-bold text-white text-center mb-12">
+            className="text-3xl font-bold text-gray-800 dark:text-white text-center mb-12">
             Tính năng nổi bật
           </Title>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-white/10 backdrop-blur-lg border-0 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-0 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
               <div className="text-center p-6">
                 <div className="text-5xl mb-4">🛡️</div>
-                <Title level={4} className="text-white mb-3">
+                <Title level={4} className="text-gray-800 dark:text-white mb-3">
                   Tài khoản chất lượng
                 </Title>
-                <Paragraph className="text-gray-300">
+                <Paragraph className="text-gray-600 dark:text-gray-300">
                   Tất cả tài khoản đều được kiểm tra kỹ lưỡng, đảm bảo an toàn
                   tuyệt đối cho người mua
                 </Paragraph>
               </div>
             </Card>
 
-            <Card className="bg-white/10 backdrop-blur-lg border-0 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-0 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
               <div className="text-center p-6">
                 <div className="text-5xl mb-4">⚡</div>
-                <Title level={4} className="text-white mb-3">
+                <Title level={4} className="text-gray-800 dark:text-white mb-3">
                   Giao hàng nhanh chóng
                 </Title>
-                <Paragraph className="text-gray-300">
+                <Paragraph className="text-gray-600 dark:text-gray-300">
                   Tài khoản được giao ngay lập tức sau khi thanh toán thành công
                 </Paragraph>
               </div>
             </Card>
 
-            <Card className="bg-white/10 backdrop-blur-lg border-0 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-0 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
               <div className="text-center p-6">
                 <div className="text-5xl mb-4">🎁</div>
-                <Title level={4} className="text-white mb-3">
+                <Title level={4} className="text-gray-800 dark:text-white mb-3">
                   Xé túi mù hấp dẫn
                 </Title>
-                <Paragraph className="text-gray-300">
+                <Paragraph className="text-gray-600 dark:text-gray-300">
                   Trải nghiệm cảm giác hồi hộp khi mở túi mù với giá cực kỳ ưu
                   đãi
                 </Paragraph>
@@ -102,7 +106,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}>
-          <Card className="bg-gradient-to-r from-purple-800/50 to-pink-700/50 backdrop-blur-lg border-0 rounded-3xl shadow-2xl overflow-hidden">
+          <Card className="bg-gradient-to-r from-purple-800/50 to-pink-700/50 dark:from-purple-900/50 dark:to-pink-800/50 backdrop-blur-lg border-0 rounded-3xl shadow-2xl overflow-hidden">
             <div className="flex flex-col md:flex-row items-center gap-8 p-8">
               <div className="flex-1 text-center md:text-left">
                 <Title level={2} className="text-white mb-4">

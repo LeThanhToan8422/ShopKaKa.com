@@ -14,12 +14,14 @@ import {
   Space,
   Typography,
   Alert,
+  App,
 } from "antd";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import useAccounts from "./hooks/useAccounts";
 import { RANK_OPTIONS, getRankLabel } from "@/lib/ranks";
 import Image from "next/image";
+import QuickPurchaseButton from "./components/QuickPurchaseButton";
 
 function AccountsContent() {
   const searchParams = useSearchParams();
@@ -48,20 +50,12 @@ function AccountsContent() {
 
   return (
     <div className="px-4 py-10 relative">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "1s" }}></div>
-      </div>
-
       {/* Header with animated title */}
       <div className="text-center mb-12 relative z-10">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 drop-shadow-lg">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white mb-4">
           DANH SÁCH TÀI KHOẢN
         </h1>
-        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
           Khám phá các tài khoản Liên Quân Mobile chất lượng cao với nhiều tướng
           và skin độc đáo
         </p>
@@ -98,7 +92,7 @@ function AccountsContent() {
         />
       )}
       {/* Search Form with enhanced styling */}
-      <Card className="bg-white/10 backdrop-blur-lg border-0 rounded-3xl shadow-2xl mb-8 relative overflow-hidden">
+      <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-0 rounded-3xl shadow-2xl mb-8 relative overflow-hidden">
         {/* Decorative border effect */}
         <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-yellow-400/20 via-pink-500/20 to-purple-500/20 opacity-30 pointer-events-none"></div>
         <div className="relative z-10">
@@ -108,20 +102,20 @@ function AccountsContent() {
                 <Form.Item
                   name="q"
                   label={
-                    <span className="text-white font-semibold">Từ khóa</span>
+                    <span className="text-gray-800 dark:text-white font-semibold">Từ khóa</span>
                   }
                   className="!mb-0">
                   <Input
                     placeholder="Mô tả, từ khóa..."
                     size="large"
-                    className="bg-white/20 border-white/30 text-white placeholder-white/70 rounded-xl"
+                    className="bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-xl"
                   />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12} md={6} lg={4}>
                 <Form.Item
                   name="rank"
-                  label={<span className="text-white font-semibold">Rank</span>}
+                  label={<span className="text-gray-800 dark:text-white font-semibold">Rank</span>}
                   className="!mb-0">
                   <Select
                     allowClear
@@ -129,18 +123,18 @@ function AccountsContent() {
                     size="large"
                     options={RANK_OPTIONS}
                     className="rounded-xl"
-                    popupClassName="bg-white/90 backdrop-blur-lg"
+                    popupClassName="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg"
                   />
                 </Form.Item>
               </Col>
               <Col xs={24} sm={24} md={12} lg={6}>
                 <Form.Item
-                  label={<span className="text-white font-semibold">Giá</span>}
+                  label={<span className="text-gray-800 dark:text-white font-semibold">Giá</span>}
                   className="!mb-0">
                   <Space.Compact className="!w-full">
                     <Form.Item name="minPrice" noStyle>
                       <InputNumber
-                        className="!w-full bg-white/20 border-white/30 text-white placeholder-white/70 rounded-l-xl"
+                        className="!w-full bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-l-xl"
                         min={0}
                         placeholder="Từ"
                         size="large"
@@ -150,12 +144,12 @@ function AccountsContent() {
                         parser={(v?: string) =>
                           v ? Number(v.replace(/,/g, "")) : 0
                         }
-                        addonAfter={<span className="text-white">₫</span>}
+                        addonAfter={<span className="text-gray-800 dark:text-white">₫</span>}
                       />
                     </Form.Item>
                     <Form.Item name="maxPrice" noStyle>
                       <InputNumber
-                        className="!w-full bg-white/20 border-white/30 text-white placeholder-white/70 rounded-r-xl"
+                        className="!w-full bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-r-xl"
                         min={0}
                         placeholder="Đến"
                         size="large"
@@ -165,7 +159,7 @@ function AccountsContent() {
                         parser={(v?: string) =>
                           v ? Number(v.replace(/,/g, "")) : 0
                         }
-                        addonAfter={<span className="text-white">₫</span>}
+                        addonAfter={<span className="text-gray-800 dark:text-white">₫</span>}
                       />
                     </Form.Item>
                   </Space.Compact>
@@ -175,11 +169,11 @@ function AccountsContent() {
                 <Form.Item
                   name="minHeroes"
                   label={
-                    <span className="text-white font-semibold">Tướng ≥</span>
+                    <span className="text-gray-800 dark:text-white font-semibold">Tướng ≥</span>
                   }
                   className="!mb-0">
                   <InputNumber
-                    className="!w-full bg-white/20 border-white/30 text-white placeholder-white/70 rounded-xl"
+                    className="!w-full bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-xl"
                     min={0}
                     placeholder="0"
                     size="large"
@@ -190,11 +184,11 @@ function AccountsContent() {
                 <Form.Item
                   name="minSkins"
                   label={
-                    <span className="text-white font-semibold">Skin ≥</span>
+                    <span className="text-gray-800 dark:text-white font-semibold">Skin ≥</span>
                   }
                   className="!mb-0">
                   <InputNumber
-                    className="!w-full bg-white/20 border-white/30 text-white placeholder-white/70 rounded-xl"
+                    className="!w-full bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-xl"
                     min={0}
                     placeholder="0"
                     size="large"
@@ -217,7 +211,7 @@ function AccountsContent() {
                       onSearch();
                     }}
                     size="large"
-                    className="flex-1 bg-white/20 border-white/30 text-white rounded-xl font-bold hover:bg-white/30 transition-all duration-300 transform hover:scale-105">
+                    className="flex-1 bg-white/50 dark:bg-gray-700/50 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-white rounded-xl font-bold hover:bg-white/70 dark:hover:bg-gray-600/70 transition-all duration-300 transform hover:scale-105">
                     Xóa
                   </Button>
                 </Space>
@@ -232,7 +226,7 @@ function AccountsContent() {
           <Card className="shadow-lg border-0 rounded-2xl">
             <Empty
               description={
-                <span className="text-gray-300">
+                <span className="text-gray-600 dark:text-gray-300">
                   Không tìm thấy tài khoản nào phù hợp
                 </span>
               }
@@ -286,7 +280,7 @@ function AccountsContent() {
 
                     {/* Enhanced Card with Advanced Animations */}
                     <div
-                      className="group bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-out hover:shadow-2xl transform-gpu border border-white/20 backdrop-blur-sm relative"
+                      className="group bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-all duration-500 ease-out hover:shadow-2xl transform-gpu border border-white/20 dark:border-gray-700/20 backdrop-blur-sm relative"
                       style={{
                         animationDelay: `${index * 100}ms`,
                         animation: "fadeInUp 0.6s ease-out forwards",
@@ -302,7 +296,7 @@ function AccountsContent() {
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-300 transition-colors duration-300 group-hover:text-gray-100">
+                          <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-gray-500 transition-colors duration-300 group-hover:text-gray-100">
                             <Typography.Text className="text-lg font-bold">
                               Không có ảnh
                             </Typography.Text>
@@ -348,19 +342,19 @@ function AccountsContent() {
                       </div>
 
                       {/* Bottom Section - Enhanced with gradient background */}
-                      <div className="p-3 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+                      <div className="p-3 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 relative overflow-hidden">
                         {/* Shimmer Effect */}
-                        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out bg-gradient-to-r from-transparent via-white/40 to-transparent"></div>
+                        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out bg-gradient-to-r from-transparent via-white/40 dark:via-gray-300/20 to-transparent"></div>
 
                         {/* Account Title with enhanced styling */}
                         <Typography.Paragraph
                           ellipsis={{ rows: 2, tooltip: true }}
-                          className="!mb-2 text-gray-800 font-bold text-base transition-colors duration-300 group-hover:text-gray-900">
+                          className="!mb-2 text-gray-800 dark:text-gray-200 font-bold text-base transition-colors duration-300 group-hover:text-gray-900 dark:group-hover:text-white">
                           Acc #{(acc.id || '').slice(0, 8)}
                         </Typography.Paragraph>
 
                         {/* Rank with enhanced styling */}
-                        <Typography.Text className="text-gray-600 text-sm block mb-3 transition-colors duration-300 group-hover:text-gray-700">
+                        <Typography.Text className="text-gray-600 dark:text-gray-400 text-sm block mb-3 transition-colors duration-300 group-hover:text-gray-700 dark:group-hover:text-gray-300">
                           Rank:{" "}
                           <span className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 group-hover:from-blue-700 group-hover:to-purple-700 transition-all duration-300">
                             {getRankLabel(acc.rank)}
@@ -369,11 +363,11 @@ function AccountsContent() {
 
                         {/* Stats with enhanced chips and icons */}
                         <div className="flex flex-wrap items-center gap-2 mb-4">
-                          <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20 text-purple-700 ring-1 ring-purple-400/30 flex items-center">
+                          <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20 text-purple-700 dark:text-purple-300 ring-1 ring-purple-400/30 dark:ring-purple-600/30 flex items-center">
                             <span className="mr-1">✨</span> Trang phục:{" "}
                             {acc.skinsCount}
                           </span>
-                          <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500/20 to-green-500/20 text-emerald-700 ring-1 ring-emerald-400/30 flex items-center">
+                          <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500/20 to-green-500/20 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-400/30 dark:ring-emerald-600/30 flex items-center">
                             <span className="mr-1">🛡️</span> Tướng:{" "}
                             {acc.heroesCount}
                           </span>
@@ -383,33 +377,22 @@ function AccountsContent() {
                         <div className="flex gap-3">
                           {/* View Details Button */}
                           <button
-                            className="flex-1 rounded-xl shadow-md transition-all duration-300 ease-out group-hover:shadow-lg group-hover:scale-105 relative overflow-hidden border-2 border-blue-500 text-blue-600 hover:bg-blue-50 bg-white py-2.5 font-bold text-sm flex items-center justify-center"
+                            className="flex-1 rounded-xl shadow-md transition-all duration-300 ease-out group-hover:shadow-lg group-hover:scale-105 relative overflow-hidden border-2 border-blue-500 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 bg-white dark:bg-gray-700 py-2.5 font-bold text-sm flex items-center justify-center"
                             onClick={() => {
                               window.location.href = `/accounts/${acc.id}`;
                             }}>
-                            <span className="relative z-10 transition-all duration-300 group-hover:text-blue-700 flex items-center">
+                            <span className="relative z-10 transition-all duration-300 group-hover:text-blue-700 dark:group-hover:text-blue-300 flex items-center">
                               <span className="mr-1.5">👁️</span> Chi tiết
                             </span>
                             {/* Button Shine Effect */}
-                            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-blue-100/50 to-transparent"></div>
+                            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-blue-100/50 dark:via-blue-500/20 to-transparent"></div>
                           </button>
 
                           {/* Buy Now Button */}
-                          <button
-                            className="flex-1 rounded-xl shadow-md transition-all duration-300 ease-out group-hover:shadow-xl group-hover:scale-105 relative overflow-hidden py-2.5 font-bold text-sm flex items-center justify-center text-white"
-                            style={{
-                              background:
-                                "linear-gradient(135deg, #FF6B35 0%, #F7931E 100%)",
-                            }}
-                            onClick={() => {
-                              // Handle purchase logic here
-                            }}>
-                            <span className="relative z-10 transition-all duration-300 flex items-center">
-                              <span className="mr-1.5">🛒</span> Mua ngay
-                            </span>
-                            {/* Button Shine Effect */}
-                            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                          </button>
+                          <QuickPurchaseButton 
+                            accountId={acc.id} 
+                            price={acc.price} 
+                          />
                         </div>
                       </div>
                     </div>
@@ -470,20 +453,22 @@ function AccountsContent() {
 
 export default function AccountsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
-        <Suspense
-          fallback={
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <Typography.Text className="mt-4 block text-white">
-                Đang tải...
-              </Typography.Text>
-            </div>
-          }>
-          <AccountsContent />
-        </Suspense>
+    <App>
+      <div className="min-h-screen py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <Suspense
+            fallback={
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <Typography.Text className="mt-4 block text-gray-800 dark:text-white">
+                  Đang tải...
+                </Typography.Text>
+              </div>
+            }>
+            <AccountsContent />
+          </Suspense>
+        </div>
       </div>
-    </div>
+    </App>
   );
 }

@@ -47,7 +47,6 @@ export interface UserProfile {
   id: string;
   name: string | null;
   role: string;
-  orders: Order[];
   balance: number;
 }
 
@@ -62,6 +61,39 @@ export interface Order {
   sepay: {
     qrUrl: string;
   };
+}
+
+export interface PaymentDetails {
+  id: string;
+  gateway: string;
+  transactionDate: string;
+  accountNumber: string;
+  code: string;
+  content: string;
+  transferType: string;
+  transferAmount: number;
+  accumulated: number;
+  subAccount: string;
+  referenceCode: string;
+  description: string;
+}
+
+export interface OrderDetails {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  payment: PaymentDetails;
+  accountId: string;
+  amount: number;
+  typeTransaction: string;
+  active: boolean;
+}
+
+export interface UserOrder {
+  orderNumber: string;
+  userId: string;
+  type: string;
+  orderDetails: OrderDetails;
 }
 
 export interface UpdateProfileData {
